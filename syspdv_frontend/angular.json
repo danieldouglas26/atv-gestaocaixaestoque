@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "PDV_frontend": {
+    "syspdv_frontend": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/pdv-frontend",
+            "outputPath": "dist/syspdv_frontend",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -64,10 +64,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "PDV_frontend:build:production"
+              "buildTarget": "syspdv_frontend:build:production"
             },
             "development": {
-              "buildTarget": "PDV_frontend:build:development"
+              "buildTarget": "syspdv_frontend:build:development"
             }
           },
           "defaultConfiguration": "development"

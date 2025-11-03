@@ -1,5 +1,5 @@
 {
-  "name": "pdv-frontend",
+  "name": "syspdv-frontend",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
