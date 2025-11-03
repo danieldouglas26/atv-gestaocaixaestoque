@@ -1,4 +1,6 @@
-# Sistema de Gestão de estoque e caixa (SYSPDV) (Atv do dia 03-11-2025)
+# Sistema de Gestão de estoque e caixa (Atv do dia 03-11-2025)
+
+## SysPDV
 
 Readme da raiz do repositório da atividade.
 
