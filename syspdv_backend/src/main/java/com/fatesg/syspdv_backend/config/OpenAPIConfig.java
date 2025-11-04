@@ -20,10 +20,6 @@ public class OpenAPIConfig {
         devServer.setUrl("http://localhost:8080");
         devServer.setDescription("Servidor de Desenvolvimento");
 
-        Server prodServer = new Server();
-        prodServer.setUrl("https://api.syspdv.com");
-        prodServer.setDescription("Servidor de Produção");
-
         Contact contact = new Contact();
         contact.setEmail("contato@syspdv.com");
         contact.setName("SysPDV Support");
@@ -43,6 +39,6 @@ public class OpenAPIConfig {
 
         return new OpenAPI()
                 .info(info)
-                .servers(List.of(devServer, prodServer));
+                .servers(List.of(devServer));
     }
 }
