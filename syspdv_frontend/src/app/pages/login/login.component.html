@@ -1,0 +1,24 @@
+<p-toast></p-toast>
+<div class="login-container">
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+    <h2>Login do Sistema</h2>
+
+    <div class="p-field">
+      <label for="email">E-mail</label>
+      <input id="email" type="email" pInputText formControlName="email" class="p-inputtext-lg" />
+    </div>
+
+    <div class="p-field">
+      <label for="senha">Senha</label>
+      <p-password id="senha" formControlName="senha" [toggleMask]="true" [feedback]="false"></p-password>
+    </div>
+
+    <p-button
+      label="Entrar"
+      type="submit"
+      [disabled]="loginForm.invalid || isLoading"
+      [loading]="isLoading"
+      styleClass="p-button-lg p-button-raised">
+    </p-button>
+  </form>
+</div>
