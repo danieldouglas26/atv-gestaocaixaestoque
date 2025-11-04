@@ -1,0 +1,24 @@
+<p-sidebar [(visible)]="sidebarVisible" [showCloseIcon]="false" [modal]="false">
+  <h3 class="menu-title">Gestão de Estoque</h3>
+  <p-menu [model]="menuItems"></p-menu>
+</p-sidebar>
+
+<div class="main-content">
+  <header class="top-bar">
+    <p-button icon="pi pi-bars" (click)="sidebarVisible = !sidebarVisible" styleClass="p-button-text"></p-button>
+
+    <div class="user-info">
+      <span>{{ currentUser?.email }}</span>
+      <p-button
+        label="Sair"
+        icon="pi pi-sign-out"
+        (click)="onLogout()"
+        styleClass="p-button-text p-button-danger">
+      </p-button>
+    </div>
+  </header>
+
+  <main class="page-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>
