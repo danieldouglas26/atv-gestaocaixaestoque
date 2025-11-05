@@ -1,77 +1,88 @@
 <p-toast></p-toast>
-<div class="grid caixa-container">
 
-  <div class="col-12 md:col-7">
-    <div class="card">
+<div class="pdv-container">
+
+  <div class="pdv-carrinho-panel">
+    <div class="carrinho-lista-container">
+      <p-table [value]="carrinho()" [tableStyle]="{'min-width': '100%'}"
+               [scrollable]="true" scrollHeight="flex">
+
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Produto</th>
+            <th style="width: 8rem">Qtd.</th>
+            <th style="width: 10rem">Preço Unit.</th>
+            <th style="width: 10rem">Subtotal</th>
+            <th style="width: 5rem"></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-item>
+          <tr>
+            <td>{{ item.produto.nome }}</td>
+            <td>{{ item.quantidade }}</td>
+            <td>{{ item.produto.precoUnitario | currency:'BRL' }}</td>
+            <td><strong>{{ item.subtotal | currency:'BRL' }}</strong></td>
+            <td>
+              <p-button icon="pi pi-trash" styleClass="p-button-rounded p-button-danger p-button-text" (onClick)="removerDoCarrinho(item.produto.id)"></p-button>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="5" class="text-center">
+              <div class="empty-cart-message">
+                <i class="pi pi-shopping-cart"></i>
+                <p>Caixa livre</p>
+                <span>Aguardando adição de produtos...</span>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+
+  <div class="pdv-sidebar-panel">
+
+    <div class="pdv-total-display">
+      <span class="total-label">Total da Venda</span>
+      <span class="total-valor">{{ totalVenda() | currency:'BRL':'symbol':'1.2-2' }}</span>
+    </div>
+
+    <div class="pdv-card-acao">
       <form [formGroup]="buscaForm" (ngSubmit)="adicionarAoCarrinho()">
         <div class="grid formgrid p-fluid">
-          <div class="field col-6">
+          <div class="field col-12">
             <label for="codigoBusca">Código do Produto</label>
             <p-inputGroup>
               <input pInputText id="codigoBusca" formControlName="codigo" (keyup.enter)="buscarProdutoPorCodigo()"/>
               <button pButton type="button" icon="pi pi-search" (onClick)="buscarProdutoPorCodigo()" pTooltip="Buscar" tooltipPosition="top"></button>
             </p-inputGroup>
           </div>
-          <div class="field col-3">
-            <label for="quantidadeBusca">Quantidade</label>
-            <p-inputNumber id="quantidadeBusca" formControlName="quantidade" [showButtons]="true" [min]="1"></p-inputNumber>
+
+          <div *ngIf="produtoEncontrado() as prod" class="produto-encontrado surface-100 p-3 border-round col-12">
+            <strong class="produto-nome">{{ prod.nome }}</strong>
+            <div class="flex justify-content-between align-items-center">
+              <span class="text-sm">Estoque: {{ prod.quantidadeEstoque }}</span>
+              <span class="preco-unitario">{{ prod.precoUnitario | currency:'BRL' }}</span>
+            </div>
           </div>
-          <div class="field col-3">
-            <label>&nbsp;</label> <p-button label="Adicionar" icon="pi pi-cart-plus" type="submit" [disabled]="!produtoEncontrado()"></p-button>
+
+          <div class="field col-6">
+            <label for="quantidadeBusca">Quantidade</label>
+            <p-inputNumber id="quantidadeBusca" formControlName="quantidade" [showButtons]="true" [min]="1" inputId="quantidadeInput"></p-inputNumber>
+          </div>
+          <div class="field col-6">
+            <label>&nbsp;</label>
+            <p-button label="Adicionar" icon="pi pi-cart-plus" type="submit" [disabled]="!produtoEncontrado()"></p-button>
           </div>
         </div>
       </form>
-
-      <div *ngIf="produtoEncontrado() as prod" class="produto-encontrado surface-100 p-3 border-round">
-        <strong>{{ prod.nome }}</strong>
-        <div class="flex justify-content-between">
-          <span>Estoque: {{ prod.quantidadeEstoque }}</span>
-          <span class="preco-unitario">{{ prod.precoUnitario | currency:'BRL' }}</span>
-        </div>
-      </div>
-
-      <div class="mt-4">
-        <h3>Carrinho</h3>
-        <p-table [value]="carrinho()" [tableStyle]="{'min-width': '100%'}">
-          <ng-template pTemplate="header">
-            <tr>
-              <th>Produto</th>
-              <th>Qtd.</th>
-              <th>Preço Unit.</th>
-              <th>Subtotal</th>
-              <th style="width: 5rem"></th>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-item>
-            <tr>
-              <td>{{ item.produto.nome }}</td>
-              <td>{{ item.quantidade }}</td>
-              <td>{{ item.produto.precoUnitario | currency:'BRL' }}</td>
-              <td><strong>{{ item.subtotal | currency:'BRL' }}</strong></td>
-              <td>
-                <p-button icon="pi pi-trash" styleClass="p-button-rounded p-button-danger" (onClick)="removerDoCarrinho(item.produto.id)"></p-button>
-              </td>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="emptymessage">
-            <tr>
-              <td colspan="5" class="text-center">Carrinho vazio</td>
-            </tr>
-          </ng-template>
-        </p-table>
-      </div>
     </div>
-  </div>
 
-  <div class="col-12 md:col-5">
-    <div class="card p-4">
-      <div class="total-display">
-        <span class="total-label">Total da Venda</span>
-        <span class="total-valor">{{ totalVenda() | currency:'BRL':'symbol':'1.2-2' }}</span>
-      </div>
-
+    <div class="pdv-card-acao">
       <form [formGroup]="pagamentoForm" (ngSubmit)="finalizarVenda()">
-        <div class="field mt-4">
+        <div class="field">
           <label for="valorRecebido">Valor Recebido (R$)</label>
           <p-inputNumber
             id="valorRecebido"
@@ -80,7 +91,8 @@
             currency="BRL"
             locale="pt-BR"
             (onInput)="calcularTroco()"
-            inputId="valorRecebidoInput">
+            inputId="valorRecebidoInput"
+            [ngClass]="{'ng-invalid ng-dirty': pagamentoForm.get('valorRecebido')?.value < totalVenda() && totalVenda() > 0}">
           </p-inputNumber>
         </div>
 
@@ -88,46 +100,49 @@
           <span class="troco-label">Troco</span>
           <span class="troco-valor">{{ troco() | currency:'BRL':'symbol':'1.2-2' }}</span>
         </div>
-
-        <div class="flex gap-2 mt-5">
-          <p-button label="Cancelar Venda" icon="pi pi-times" styleClass="p-button-danger p-button-outlined" (onClick)="limparVenda()" type="button"></p-button>
-          <p-button label="Finalizar Venda" icon="pi pi-check" styleClass="flex-1" type="submit" [disabled]="totalVenda() <= 0 || pagamentoForm.invalid || pagamentoForm.get('valorRecebido')?.value < totalVenda()"></p-button>
-        </div>
       </form>
     </div>
+
+    <div class="pdv-sidebar-footer">
+      <form [formGroup]="pagamentoForm" (ngSubmit)="finalizarVenda()" class="footer-form">
+        <p-button label="Cancelar Venda" icon="pi pi-times" styleClass="p-button-danger p-button-outlined" (onClick)="limparVenda()" type="button"></p-button>
+        <p-button label="Finalizar Venda" icon="pi pi-check" styleClass="flex-1" type="submit" [disabled]="totalVenda() <= 0 || pagamentoForm.invalid || (pagamentoForm.get('valorRecebido')?.value || 0) < totalVenda()"></p-button>
+      </form>
+    </div>
+
   </div>
 </div>
 
 <p-dialog [(visible)]="reciboDialogVisivel" header="Venda Registrada (ID: {{vendaFinalizada?.id}})" [modal]="true" [style]="{width: '450px'}" (onHide)="fecharRecibo()">
   <div *ngIf="vendaFinalizada" class="recibo">
-    <p>Venda realizada em: {{ vendaFinalizada.dataHora | date:'dd/MM/yyyy HH:mm:ss' }}</p>
-    <p>Operador: {{ vendaFinalizada.usuario.nomeCompleto }}</p>
+     <p>Venda realizada em: {{ vendaFinalizada.dataHora | date:'dd/MM/yyyy HH:mm:ss' }}</p>
+     <p>Operador: {{ vendaFinalizada.usuario.nomeCompleto }}</p>
 
-    <p-table [value]="vendaFinalizada.itens" styleClass="mt-3 mb-3">
-      <ng-template pTemplate="header">
-        <tr>
-          <th>Produto</th>
-          <th>Qtd</th>
-          <th>Subtotal</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-item>
-        <tr>
-          <td>{{ item.produto.nome }}</td>
-          <td>{{ item.quantidade }}</td>
-          <td>{{ item.subtotal | currency:'BRL' }}</td>
-        </tr>
-      </ng-template>
-    </p-table>
+     <p-table [value]="vendaFinalizada.itens" styleClass="mt-3 mb-3">
+       <ng-template pTemplate="header">
+         <tr>
+           <th>Produto</th>
+           <th>Qtd</th>
+           <th>Subtotal</th>
+         </tr>
+       </ng-template>
+       <ng-template pTemplate="body" let-item>
+         <tr>
+           <td>{{ item.produto.nome }}</td>
+           <td>{{ item.quantidade }}</td>
+           <td>{{ item.subtotal | currency:'BRL' }}</td>
+         </tr>
+       </ng-template>
+     </p-table>
 
-    <div class="recibo-totais">
-      <div><span>Total:</span> <strong>{{ vendaFinalizada.valorTotal | currency:'BRL' }}</strong></div>
-      <div><span>Recebido:</span> <strong>{{ vendaFinalizada.valorRecebido | currency:'BRL' }}</strong></div>
-      <div><span>Troco:</span> <strong>{{ vendaFinalizada.troco | currency:'BRL' }}</strong></div>
-    </div>
+     <div class="recibo-totais">
+       <div><span>Total:</span> <strong>{{ vendaFinalizada.valorTotal | currency:'BRL' }}</strong></div>
+       <div><span>Recebido:</span> <strong>{{ vendaFinalizada.valorRecebido | currency:'BRL' }}</strong></div>
+       <div><span>Troco:</span> <strong>{{ vendaFinalizada.troco | currency:'BRL' }}</strong></div>
+     </div>
 
-    <div class="p-dialog-footer mt-4">
-      <p-button label="Fechar" icon="pi pi-check" (onClick)="fecharRecibo()" styleClass="w-full"></p-button>
-    </div>
-  </div>
+     <div class="p-dialog-footer mt-4">
+       <p-button label="Fechar" icon="pi pi-check" (onClick)="fecharRecibo()" styleClass="w-full"></p-button>
+     </div>
+   </div>
 </p-dialog>

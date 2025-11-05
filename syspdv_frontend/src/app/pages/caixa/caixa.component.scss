@@ -1,96 +1,188 @@
-/* Garante que o layout ocupe a altura */
+/* Usar ::ng-deep é necessário para customizar sub-componentes do PrimeNG
+   e fazê-los preencher o espaço corretamente (ex: a tabela rolável) */
 :host {
   display: block;
+  /* Garante que o componente se estique para preencher o contêiner pai */
+  width: 100%;
   height: 100%;
 }
-.caixa-container {
-  height: 100%;
-  > div {
+
+.pdv-container {
+  display: flex;
+  width: 100%;
+  /*
+    Calcula a altura total da tela.
+    Ajuste '80px' se você tiver um header/navbar principal.
+    Se não tiver, use '100vh'.
+  */
+  height: calc(100vh - 80px);
+  background-color: var(--surface-100); // Fundo geral
+}
+
+// ===================================
+// PAINEL ESQUERDO (CARRINHO)
+// ===================================
+.pdv-carrinho-panel {
+  flex: 1; // Ocupa todo o espaço restante
+  display: flex;
+  flex-direction: column;
+  background-color: var(--surface-0);
+  border-right: 1px solid var(--surface-200);
+}
+
+.carrinho-lista-container {
+  flex: 1; // Faz este container crescer e preencher o espaço
+  overflow: hidden; // Esconde o overflow, pois a p-table cuidará disso
+
+  // Faz a p-table se comportar como um flex-item e preencher o espaço
+  ::ng-deep .p-table {
     height: 100%;
-    .card {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
+    display: flex;
+    flex-direction: column;
+
+    .p-datatable-wrapper {
+      flex: 1; // O wrapper do body da tabela é quem deve crescer
+      overflow: auto; // A rolagem acontece aqui
+    }
+
+    .p-datatable-emptymessage {
+      td {
+        padding: 4rem 0; // Mais espaço quando vazio
+      }
     }
   }
 }
 
-/* Estilos para o produto encontrado */
-.produto-encontrado {
-  margin-top: 1rem;
-  .preco-unitario {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: var(--primary-color);
+// Mensagem de Carrinho Vazio
+.empty-cart-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--surface-500);
+
+  i {
+    font-size: 4rem;
+  }
+  p {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin: 1rem 0 0.5rem 0;
+  }
+  span {
+    font-size: 1rem;
+    font-style: italic;
   }
 }
 
-/* Estilos para os displays de Total e Troco */
-.total-display, .troco-display {
+
+// ===================================
+// PAINEL DIREITO (SIDEBAR DE AÇÕES)
+// ===================================
+.pdv-sidebar-panel {
+  width: 420px; // Largura fixa para as ações
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.5rem;
-  border-radius: 6px;
-  background-color: var(--surface-100);
+  flex-direction: column;
+  background-color: var(--surface-card);
+  overflow-y: auto; // Permite rolagem se o conteúdo for muito grande
 }
 
-.total-display {
-  background-color: var(--primary-color-reverse);
-  border: 1px solid var(--primary-color);
+// 1. TOTAL DA VENDA (HERO)
+.pdv-total-display {
+  background: var(--primary-color);
+  color: var(--primary-color-text);
+  padding: 1.5rem 2rem;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
   .total-label {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: var(--primary-color);
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 500;
+    opacity: 0.9;
+    text-transform: uppercase;
   }
   .total-valor {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: var(--primary-color);
+    display: block;
+    font-size: 3.5rem; // Gigante
+    font-weight: 700;
+    line-height: 1.2;
+  }
+}
+
+// 2. e 3. Cards de Ação (Busca e Pagamento)
+.pdv-card-acao {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid var(--surface-200);
+
+  .produto-encontrado {
+    margin-bottom: 1rem;
+    .produto-nome {
+      font-size: 1.1rem;
+      font-weight: 600;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    .preco-unitario {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--primary-500);
+    }
+  }
+
+  // Input de Valor Recebido fica vermelho se for menor que o total
+  ::ng-deep .p-inputnumber.ng-invalid.ng-dirty .p-inputtext {
+    border-color: var(--red-500);
   }
 }
 
 .troco-display {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  background: var(--surface-100);
+  padding: 1rem;
+  border-radius: 6px;
   margin-top: 1rem;
-  background-color: var(--surface-card);
-  border: 1px dashed var(--surface-400);
+
   .troco-label {
     font-size: 1.2rem;
-    font-weight: 600;
+    font-weight: 500;
+    color: var(--surface-700);
   }
   .troco-valor {
-    font-size: 2rem;
-    font-weight: 600;
-    color: var(--green-500);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--green-600);
   }
 }
 
-/* Alinhamento do rodapé do dialog */
-.p-dialog-footer {
+// 4. Rodapé Fixo da Sidebar
+.pdv-sidebar-footer {
+  margin-top: auto; // <-- Mágica do Flexbox: empurra para o fundo
+  padding: 1rem 2rem;
+  background: var(--surface-50);
+  border-top: 1px solid var(--surface-200);
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
+
+  .footer-form {
+    display: flex;
+    gap: 0.75rem;
+  }
+}
+
+// Estilos do Recibo (copiados do seu código original)
+.recibo-totais {
+  border-top: 1px dashed var(--surface-300);
+  padding-top: 1rem;
+  margin-top: 1rem;
   display: flex;
-  justify-content: flex-end;
-}
+  flex-direction: column;
+  gap: 0.5rem;
 
-/* Estilos do Recibo */
-.recibo {
-  p {
-    margin: 0.5rem 0;
-    color: var(--text-color-secondary);
-  }
-  .recibo-totais {
-    border-top: 1px dashed var(--surface-400);
-    padding-top: 1rem;
-    margin-top: 1rem;
-
-    div {
-      display: flex;
-      justify-content: space-between;
-      font-size: 1.1rem;
-      margin-bottom: 0.5rem;
-
-      strong {
-        font-size: 1.2rem;
-      }
-    }
+  div {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.1rem;
   }
 }
