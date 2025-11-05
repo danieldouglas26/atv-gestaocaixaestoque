@@ -1,23 +1,10 @@
-
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
   width: 100%;
-  font-family: var(--font-family);
-  background-color: var(--surface-ground);
-  color: var(--text-color);
-}
-/* --- ADICIONE ISTO --- */
-/* Garante que os cabeçalhos e parágrafos usem a cor do tema */
-h1, h2, h3, h4, h5, h6, p, label {
-  color: var(--text-color);
 }
 
-/* Opcional: Garante que os links também usem a cor primária */
-a {
-  color: var(--primary-color);
-}
 
 :root > app-root > .splash-screen {
   display: flex;

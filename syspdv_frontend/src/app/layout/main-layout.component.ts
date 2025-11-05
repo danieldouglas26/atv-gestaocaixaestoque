@@ -4,8 +4,7 @@ import { AuthService } from '../core/services/auth.service';
 import { User, UserRole } from '../core/models/user.model';
 import { MenuItem } from 'primeng/api';
 
-
-import { SidebarModule } from 'primeng/sidebar';
+// import { SidebarModule } from 'primeng/sidebar'; // <-- REMOVA ESTA LINHA
 import { ButtonModule } from 'primeng/button';
 import { MenuModule } from 'primeng/menu';
 import { CommonModule } from '@angular/common';
@@ -16,7 +15,7 @@ import { CommonModule } from '@angular/common';
   imports: [
     CommonModule,
     RouterOutlet,
-    SidebarModule,
+    // SidebarModule, // <-- REMOVA ESTA LINHA
     ButtonModule,
     MenuModule
   ],
@@ -38,7 +37,7 @@ export class MainLayoutComponent implements OnInit {
 
 
   private handleInitialRedirect(): void {
-
+    // Esta lógica já está correta
     if (this.router.url === '/app' || this.router.url === '/app/') {
       const role = this.currentUser?.perfil;
       if (role === 'ADMIN') {
@@ -51,6 +50,7 @@ export class MainLayoutComponent implements OnInit {
 
 
   private buildMenu(): void {
+    // Esta lógica já está correta
     const role = this.currentUser?.perfil;
     let items: MenuItem[] = [];
 

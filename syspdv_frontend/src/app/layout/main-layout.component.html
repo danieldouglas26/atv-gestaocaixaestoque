@@ -1,9 +1,9 @@
-<p-sidebar [(visible)]="sidebarVisible" [showCloseIcon]="false" [modal]="false">
+<div class="layout-sidebar" [class.sidebar-hidden]="!sidebarVisible">
   <h3 class="menu-title">Gestão de Estoque</h3>
   <p-menu [model]="menuItems"></p-menu>
-</p-sidebar>
+</div>
 
-<div class="main-content">
+<div class="main-content" [class.sidebar-hidden]="!sidebarVisible">
   <header class="top-bar">
     <p-button icon="pi pi-bars" (click)="sidebarVisible = !sidebarVisible" styleClass="p-button-text"></p-button>
 
