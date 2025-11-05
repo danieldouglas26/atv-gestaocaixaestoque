@@ -3,6 +3,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { AuthService } from '../../core/services/auth.service';
+// ... (imports de UI)
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { ButtonModule } from 'primeng/button';
@@ -24,6 +25,7 @@ import { CommonModule } from '@angular/common';
   styleUrl: './login.component.scss'
 })
 export class LoginComponent {
+  // ... (propriedades fb, authService, etc. continuam iguais)
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
@@ -49,11 +51,12 @@ export class LoginComponent {
       next: () => {
         // Sucesso, redireciona para a página principal
         this.router.navigate(['/app']);
+        // O isLoading será resetado naturalmente pela navegação
       },
-      error: (err) => {
+      error: (err: Error) => { // Agora recebemos um Error
         this.isLoading = false;
-        // Erro simulado do mock [cite: 108]
-        this.messageService.add({ severity: 'error', summary: 'Erro', detail: err.message || 'Credenciais inválidas' });
+        // Mostra a mensagem de erro vinda do AuthService
+        this.messageService.add({ severity: 'error', summary: 'Erro', detail: err.message });
       }
     });
   }
