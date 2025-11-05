@@ -17,7 +17,7 @@ describe('AppComponent', () => {
   it(`should have the 'syspdv_frontend' title`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('syspdv_frontend');
+    expect((app as any).title).toEqual('syspdv_frontend');
   });
 
   it('should render title', () => {
