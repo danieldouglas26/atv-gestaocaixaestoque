@@ -64,11 +64,7 @@ export const routes: Routes = [
       },
 
       // Rota 'vazia' dentro de /app, será tratada pelo MainLayoutComponent
-      {
-        path: '',
-        pathMatch: 'full',
-        redirectTo: 'dashboard' // O MainLayoutComponent irá corrigir se for Operador
-      }
+
     ]
   },
 
