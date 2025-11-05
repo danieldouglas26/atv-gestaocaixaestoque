@@ -2,9 +2,16 @@
 <div class="card">
   <p-table [value]="produtos" [tableStyle]="{'min-width': '50rem'}">
     <ng-template pTemplate="caption">
-      <div class="flex justify-content-between align-items-center">
-        <h2>Gestão de Estoque</h2>
-        <p-button icon="pi pi-plus" label="Novo Produto" (onClick)="abrirDialogNovo()"></p-button>
+      <div class="table-header-container">
+        <h2 class="m-0">Gestão de Estoque</h2>
+        <div class="flex gap-2">
+          <p-inputGroup>
+            <input pInputText placeholder="Buscar por Código" [formControl]="searchControl" (keyup.enter)="buscarProduto()"/>
+            <button pButton icon="pi pi-search" (onClick)="buscarProduto()" pTooltip="Buscar" tooltipPosition="top"></button>
+            <button pButton icon="pi pi-refresh" (onClick)="limparBusca()" styleClass="p-button-outlined" pTooltip="Limpar Busca" tooltipPosition="top"></button>
+          </p-inputGroup>
+          <p-button icon="pi pi-plus" label="Novo Produto" (onClick)="abrirDialogNovo()"></p-button>
+        </div>
       </div>
     </ng-template>
     <ng-template pTemplate="header">
@@ -14,7 +21,7 @@
         <th>Categoria</th>
         <th>Preço (R$)</th>
         <th>Estoque</th>
-        <th style="width: 10rem">Ações</th>
+        <th style="width: 14rem">Ações</th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-prod>
@@ -25,48 +32,118 @@
         <td>{{ prod.precoUnitario | number: '1.2-2' }}</td>
         <td>{{ prod.quantidadeEstoque }}</td>
         <td>
-          <p-button icon="pi pi-pencil" styleClass="p-button-rounded p-button-success p-mr-2" (onClick)="abrirDialogEditar(prod)"></p-button>
-          <p-button icon="pi pi-trash" styleClass="p-button-rounded p-button-danger" (onClick)="excluirProduto(prod.id)"></p-button>
+          <p-button
+            icon="pi pi-arrows-h"
+            pTooltip="Ajustar Estoque"
+            tooltipPosition="top"
+            styleClass="p-button-rounded p-button-info p-mr-2"
+            (onClick)="abrirDialogAjuste(prod)">
+          </p-button>
+          <p-button
+            icon="pi pi-pencil"
+            pTooltip="Editar Produto"
+            tooltipPosition="top"
+            styleClass="p-button-rounded p-button-success p-mr-2"
+            (onClick)="abrirDialogEditar(prod)">
+          </p-button>
+          <p-button
+            icon="pi pi-trash"
+            pTooltip="Excluir Produto"
+            tooltipPosition="top"
+            styleClass="p-button-rounded p-button-danger"
+            (onClick)="excluirProduto(prod.id)">
+          </p-button>
         </td>
       </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+        <tr>
+            <td colspan="6" class="text-center">Nenhum produto encontrado.</td>
+        </tr>
     </ng-template>
   </p-table>
 </div>
 
-<p-dialog [(visible)]="dialogVisivel" [header]="isEditMode ? 'Editar Produto' : 'Novo Produto'" [modal]="true" [style]="{width: '450px'}" (onHide)="fecharDialog()">
+<p-dialog [(visible)]="dialogVisivel" [header]="isEditMode ? 'Editar Produto' : 'Novo Produto'" [modal]="true" [style]="{width: '600px'}" (onHide)="fecharDialog()">
   <form [formGroup]="produtoForm" (ngSubmit)="salvarProduto()">
     <div class="p-fluid p-formgrid grid">
 
       <div class="field col-6">
         <label for="codigo">Código</label>
         <input pInputText id="codigo" formControlName="codigo" />
+        <small class="p-error" *ngIf="f['codigo'].invalid && f['codigo'].touched">
+          Código é obrigatório.
+        </small>
       </div>
 
       <div class="field col-6">
         <label for="nome">Nome</label>
         <input pInputText id="nome" formControlName="nome" />
+         <small class="p-error" *ngIf="f['nome'].invalid && f['nome'].touched">
+          Nome é obrigatório.
+        </small>
       </div>
 
       <div class="field col-12">
         <label for="categoria">Categoria</label>
         <input pInputText id="categoria" formControlName="categoria" />
+         <small class="p-error" *ngIf="f['categoria'].invalid && f['categoria'].touched">
+          Categoria é obrigatória.
+        </small>
       </div>
 
       <div class="field col-6">
         <label for="precoUnitario">Preço Unitário</label>
         <p-inputNumber id="precoUnitario" formControlName="precoUnitario" mode="currency" currency="BRL" locale="pt-BR"></p-inputNumber>
+         <small class="p-error" *ngIf="f['precoUnitario'].invalid && f['precoUnitario'].touched">
+          Preço é obrigatório e deve ser maior que R$ 0,00.
+        </small>
       </div>
 
       <div class="field col-6">
         <label for="quantidadeEstoque">Qtd. Estoque</label>
-        <p-inputNumber id="quantidadeEstoque" formControlName="quantidadeEstoque"></p-inputNumber>
+        <p-inputNumber id="quantidadeEstoque" formControlName="quantidadeEstoque" [min]="0"></p-inputNumber>
+         <small class="p-error" *ngIf="f['quantidadeEstoque'].invalid && f['quantidadeEstoque'].touched">
+          Estoque é obrigatório e não pode ser negativo.
+        </small>
       </div>
 
     </div>
 
     <div class="p-dialog-footer">
       <p-button label="Cancelar" icon="pi pi-times" styleClass="p-button-text" (onClick)="fecharDialog()"></p-button>
-      <p-button label="Salvar" icon="pi pi-check" type="submit" [disabled]="produtoForm.invalid"></p-button>
+      <p-button label="Salvar" icon="pi pi-check" type="submit"></p-button>
+    </div>
+  </form>
+</p-dialog>
+
+
+<p-dialog [(visible)]="ajusteDialogVisivel" header="Ajustar Estoque: {{currentProdutoAjuste?.nome}}" [modal]="true" [style]="{width: '450px'}" (onHide)="fecharDialogAjuste()">
+  <form [formGroup]="ajusteForm" (ngSubmit)="salvarAjuste()">
+    <div class="p-fluid p-formgrid grid">
+
+      <div class="field col-12">
+        <label for="quantidadeAjuste">Quantidade do Ajuste</label>
+        <p-inputNumber id="quantidadeAjuste" formControlName="quantidade" [showButtons]="true" [min]="-9999" [max]="9999"></p-inputNumber>
+        <small>Positivo para entrada (ex: 5), Negativo para saída (ex: -3)</small>
+         <small class="p-error" *ngIf="af['quantidade'].invalid && af['quantidade'].touched">
+          Quantidade é obrigatória e não pode ser 0.
+        </small>
+      </div>
+
+      <div class="field col-12">
+        <label for="motivo">Motivo do Ajuste</label>
+        <textarea pInputTextarea id="motivo" formControlName="motivo" rows="3" placeholder="Ex: Contagem de inventário, Produto vencido..."></textarea>
+         <small class="p-error" *ngIf="af['motivo'].invalid && af['motivo'].touched">
+          Motivo é obrigatório (mínimo 5 caracteres).
+        </small>
+      </div>
+
+    </div>
+
+    <div class="p-dialog-footer">
+      <p-button label="Cancelar" icon="pi pi-times" styleClass="p-button-text" (onClick)="fecharDialogAjuste()"></p-button>
+      <p-button label="Salvar Ajuste" icon="pi pi-check" type="submit"></p-button>
     </div>
   </form>
 </p-dialog>
