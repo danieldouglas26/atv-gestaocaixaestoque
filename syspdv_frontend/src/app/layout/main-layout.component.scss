@@ -3,22 +3,55 @@
   height: 100vh;
   width: 100vw;
   overflow: hidden;
+  /* Cor de fundo principal do layout */
+  background-color: var(--surface-ground);
 }
 
-// Estiliza o menu
+/* Estiliza o menu */
 ::ng-deep .p-sidebar {
+  /* Cor de fundo da sidebar */
   .p-sidebar-content {
+    background-color: var(--surface-section);
     padding: 1rem;
+    border-right: 1px solid var(--surface-border);
   }
+
   .menu-title {
     font-size: 1.25rem;
     font-weight: 600;
     padding: 0.5rem 0.5rem 1.5rem 0.5rem;
+    /* Cor primária (azul, verde, etc. do tema) */
     color: var(--primary-color);
   }
+
   .p-menu {
     width: 100%;
     border: none;
+    /* Fundo do menu em si, caso difira da sidebar */
+    background-color: transparent;
+  }
+
+  /* Ajusta cores dos itens do menu para o tema */
+  .p-menuitem-link {
+    .p-menuitem-text {
+      color: var(--text-color-secondary); // Cor mais suave
+    }
+    .p-menuitem-icon {
+      color: var(--text-color-secondary); // Cor mais suave
+    }
+
+    &:hover {
+      background-color: var(--surface-hover); // Fundo ao passar o mouse
+    }
+  }
+
+  /* Item de menu ativo */
+  .p-menuitem.p-menuitem-active > .p-menuitem-content {
+    background-color: var(--primary-color-reverse); // Fundo sutil da cor primária
+    .p-menuitem-text, .p-menuitem-icon {
+      color: var(--primary-color); // Cor primária
+      font-weight: 600;
+    }
   }
 }
 
@@ -27,9 +60,10 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  transition: margin-left 0.3s;
   width: 100%;
   height: 100%;
+  // Transição suave ao abrir/fechar sidebar
+  transition: margin-left 0.3s;
 }
 
 .top-bar {
@@ -37,8 +71,10 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.5rem 1rem;
-  background: #fff;
-  border-bottom: 1px solid #dee2e6;
+  /* Cor do topo */
+  background: var(--surface-card);
+  /* Borda inferior */
+  border-bottom: 1px solid var(--surface-border);
   height: 60px;
   flex-shrink: 0;
 }
@@ -48,14 +84,14 @@
   align-items: center;
   gap: 1rem;
   font-weight: 500;
-  color: #495057;
+  /* Cor principal do texto */
+  color: var(--text-color);
 }
 
 .page-content {
   flex: 1;
   padding: 1.5rem;
-  background-color: #f9f9f9;
+  /* Cor de fundo do conteúdo */
+  background-color: var(--surface-ground);
   overflow-y: auto;
-}
-:host-context(body.p-sidebar-active) .main-content {
 }
