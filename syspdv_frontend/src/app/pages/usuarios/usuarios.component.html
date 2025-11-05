@@ -2,14 +2,21 @@
 <div class="card">
   <p-table [value]="usuarios" [tableStyle]="{'min-width': '50rem'}">
     <ng-template pTemplate="caption">
-      <div class="flex justify-content-between align-items-center">
-        <h2>Manter Usuários</h2>
-        <p-button icon="pi pi-plus" label="Novo Usuário" (onClick)="abrirDialogNovo()"></p-button>
+      <div class="table-header-container">
+        <h2 class="m-0">Manter Usuários</h2>
+        <div class="flex gap-2">
+          <p-inputGroup>
+            <p-inputNumber placeholder="Buscar por ID" [formControl]="searchIdControl" [showButtons]="false" [useGrouping]="false" (keyup.enter)="buscarUsuarioPorId()"></p-inputNumber>
+            <button pButton icon="pi pi-search" (onClick)="buscarUsuarioPorId()" pTooltip="Buscar" tooltipPosition="top"></button>
+            <button pButton icon="pi pi-refresh" (onClick)="limparBusca()" styleClass="p-button-outlined" pTooltip="Limpar Busca" tooltipPosition="top"></button>
+          </p-inputGroup>
+          <p-button icon="pi pi-plus" label="Novo Usuário" (onClick)="abrirDialogNovo()"></p-button>
+        </div>
       </div>
     </ng-template>
     <ng-template pTemplate="header">
       <tr>
-        <th>Nome Completo</th>
+        <th>ID</th> <th>Nome Completo</th>
         <th>E-mail</th>
         <th>Perfil</th>
         <th>Status</th>
@@ -18,37 +25,66 @@
     </ng-template>
     <ng-template pTemplate="body" let-user>
       <tr>
-        <td>{{ user.nomeCompleto }}</td>
+        <td>{{ user.id }}</td> <td>{{ user.nomeCompleto }}</td>
         <td>{{ user.email }}</td>
         <td>{{ user.perfilDescricao }}</td>
         <td>{{ user.statusDescricao }}</td>
         <td>
-          <p-button icon="pi pi-pencil" styleClass="p-button-rounded p-button-success p-mr-2" (onClick)="abrirDialogEditar(user)"></p-button>
-          <p-button icon="pi pi-trash" styleClass="p-button-rounded p-button-danger" (onClick)="excluirUsuario(user.id)"></p-button>
+          <p-button
+            icon="pi pi-pencil"
+            pTooltip="Editar Usuário"
+            tooltipPosition="top"
+            styleClass="p-button-rounded p-button-success p-mr-2"
+            (onClick)="abrirDialogEditar(user)">
+          </p-button>
+          <p-button
+            icon="pi pi-trash"
+            pTooltip="Excluir Usuário"
+            tooltipPosition="top"
+            styleClass="p-button-rounded p-button-danger"
+            (onClick)="excluirUsuario(user.id)">
+          </p-button>
         </td>
       </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+        <tr>
+            <td colspan="6" class="text-center">Nenhum usuário encontrado.</td>
+        </tr>
     </ng-template>
   </p-table>
 </div>
 
-<p-dialog [(visible)]="dialogVisivel" [header]="isEditMode ? 'Editar Usuário' : 'Novo Usuário'" [modal]="true" [style]="{width: '450px'}" (onHide)="fecharDialog()">
+<p-dialog [(visible)]="dialogVisivel" [header]="isEditMode ? 'Editar Usuário' : 'Novo Usuário'" [modal]="true" [style]="{width: '500px'}" (onHide)="fecharDialog()">
   <form [formGroup]="usuarioForm" (ngSubmit)="salvarUsuario()">
     <div class="p-fluid p-formgrid grid">
 
       <div class="field col-12">
         <label for="nomeCompleto">Nome Completo</label>
         <input pInputText id="nomeCompleto" formControlName="nomeCompleto" />
+        <small class="p-error" *ngIf="f['nomeCompleto'].invalid && f['nomeCompleto'].touched">
+          Nome é obrigatório.
+        </small>
       </div>
 
       <div class="field col-12">
         <label for="email">E-mail</label>
         <input pInputText id="email" formControlName="email" />
+        <small class="p-error" *ngIf="f['email'].invalid && f['email'].touched">
+          <span *ngIf="f['email'].errors?.['required']">E-mail é obrigatório.</span>
+          <span *ngIf="f['email'].errors?.['email']">Formato de e-mail inválido.</span>
+        </small>
       </div>
 
       <div class="field col-12">
         <label for="senha">Senha</label>
-        <p-password id="senha" formControlName="senha" [toggleMask]="true" [feedback]="false" [required]="!isEditMode"></p-password>
+        <p-password id="senha" formControlName="senha" [toggleMask]="true" [feedback]="false"></p-password>
         <small *ngIf="isEditMode" class="p-info">Deixe em branco para não alterar</small>
+        <small class="p-error" *ngIf="f['senha'].invalid && f['senha'].touched">
+          <span *ngIf="f['senha'].errors?.['required']">Senha é obrigatória.</span>
+          <span *ngIf="f['senha'].errors?.['minlength']">Mínimo 8 caracteres.</span>
+          <span *ngIf="f['senha'].errors?.['pattern']">Deve conter 1 letra maiúscula e 1 número.</span>
+        </small>
       </div>
 
       <div class="field col-6">
@@ -65,7 +101,7 @@
 
     <div class="p-dialog-footer">
       <p-button label="Cancelar" icon="pi pi-times" styleClass="p-button-text" (onClick)="fecharDialog()"></p-button>
-      <p-button label="Salvar" icon="pi pi-check" type="submit" [disabled]="usuarioForm.invalid"></p-button>
+      <p-button label="Salvar" icon="pi pi-check" type="submit"></p-button>
     </div>
   </form>
 </p-dialog>

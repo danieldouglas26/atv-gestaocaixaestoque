@@ -1,0 +1,96 @@
+/* Garante que o layout ocupe a altura */
+:host {
+  display: block;
+  height: 100%;
+}
+.caixa-container {
+  height: 100%;
+  > div {
+    height: 100%;
+    .card {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+  }
+}
+
+/* Estilos para o produto encontrado */
+.produto-encontrado {
+  margin-top: 1rem;
+  .preco-unitario {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+  }
+}
+
+/* Estilos para os displays de Total e Troco */
+.total-display, .troco-display {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-radius: 6px;
+  background-color: var(--surface-100);
+}
+
+.total-display {
+  background-color: var(--primary-color-reverse);
+  border: 1px solid var(--primary-color);
+  .total-label {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+  }
+  .total-valor {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--primary-color);
+  }
+}
+
+.troco-display {
+  margin-top: 1rem;
+  background-color: var(--surface-card);
+  border: 1px dashed var(--surface-400);
+  .troco-label {
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+  .troco-valor {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--green-500);
+  }
+}
+
+/* Alinhamento do rodapé do dialog */
+.p-dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Estilos do Recibo */
+.recibo {
+  p {
+    margin: 0.5rem 0;
+    color: var(--text-color-secondary);
+  }
+  .recibo-totais {
+    border-top: 1px dashed var(--surface-400);
+    padding-top: 1rem;
+    margin-top: 1rem;
+
+    div {
+      display: flex;
+      justify-content: space-between;
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+
+      strong {
+        font-size: 1.2rem;
+      }
+    }
+  }
+}

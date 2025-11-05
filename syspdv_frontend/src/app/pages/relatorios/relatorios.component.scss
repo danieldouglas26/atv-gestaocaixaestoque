@@ -1,0 +1,27 @@
+/* Copiando estilos do recibo do caixa para reutilização */
+.recibo {
+  p {
+    margin: 0.5rem 0;
+    color: var(--text-color-secondary);
+  }
+  .recibo-totais {
+    border-top: 1px dashed var(--surface-400);
+    padding-top: 1rem;
+    margin-top: 1rem;
+
+    div {
+      display: flex;
+      justify-content: space-between;
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+
+      strong {
+        font-size: 1.2rem;
+      }
+    }
+  }
+}
+
+.text-center {
+  text-align: center;
+}

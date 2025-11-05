@@ -1,4 +1,40 @@
-/* Adicione espaçamento nos botões de ação da tabela */
+/* Adiciona espaçamento entre os botões de ação */
 ::ng-deep .p-button.p-mr-2 {
   margin-right: 0.5rem;
+}
+
+/* Estilo para o cabeçalho da tabela (caption) */
+.table-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* Estilo para a mensagem de erro */
+.p-error {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--p-red-500);
+}
+
+/* Estilo para a informação (senha opcional) */
+.p-info {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--text-color-secondary);
+}
+
+/* Garante que o rodapé do dialog (footer) fique alinhado */
+.p-dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding-top: 1.5rem;
+}
+
+/* Ajuste para o texto centralizado da tabela vazia */
+.text-center {
+  text-align: center;
 }
