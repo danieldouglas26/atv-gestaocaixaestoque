@@ -1,0 +1,72 @@
+<p-toast></p-toast>
+<div class="card">
+  <p-table [value]="produtos" [tableStyle]="{'min-width': '50rem'}">
+    <ng-template pTemplate="caption">
+      <div class="flex justify-content-between align-items-center">
+        <h2>Gestão de Estoque</h2>
+        <p-button icon="pi pi-plus" label="Novo Produto" (onClick)="abrirDialogNovo()"></p-button>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Código</th>
+        <th>Nome</th>
+        <th>Categoria</th>
+        <th>Preço (R$)</th>
+        <th>Estoque</th>
+        <th style="width: 10rem">Ações</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-prod>
+      <tr>
+        <td>{{ prod.codigo }}</td>
+        <td>{{ prod.nome }}</td>
+        <td>{{ prod.categoria }}</td>
+        <td>{{ prod.precoUnitario | number: '1.2-2' }}</td>
+        <td>{{ prod.quantidadeEstoque }}</td>
+        <td>
+          <p-button icon="pi pi-pencil" styleClass="p-button-rounded p-button-success p-mr-2" (onClick)="abrirDialogEditar(prod)"></p-button>
+          <p-button icon="pi pi-trash" styleClass="p-button-rounded p-button-danger" (onClick)="excluirProduto(prod.id)"></p-button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<p-dialog [(visible)]="dialogVisivel" [header]="isEditMode ? 'Editar Produto' : 'Novo Produto'" [modal]="true" [style]="{width: '450px'}" (onHide)="fecharDialog()">
+  <form [formGroup]="produtoForm" (ngSubmit)="salvarProduto()">
+    <div class="p-fluid p-formgrid grid">
+
+      <div class="field col-6">
+        <label for="codigo">Código</label>
+        <input pInputText id="codigo" formControlName="codigo" />
+      </div>
+
+      <div class="field col-6">
+        <label for="nome">Nome</label>
+        <input pInputText id="nome" formControlName="nome" />
+      </div>
+
+      <div class="field col-12">
+        <label for="categoria">Categoria</label>
+        <input pInputText id="categoria" formControlName="categoria" />
+      </div>
+
+      <div class="field col-6">
+        <label for="precoUnitario">Preço Unitário</label>
+        <p-inputNumber id="precoUnitario" formControlName="precoUnitario" mode="currency" currency="BRL" locale="pt-BR"></p-inputNumber>
+      </div>
+
+      <div class="field col-6">
+        <label for="quantidadeEstoque">Qtd. Estoque</label>
+        <p-inputNumber id="quantidadeEstoque" formControlName="quantidadeEstoque"></p-inputNumber>
+      </div>
+
+    </div>
+
+    <div class="p-dialog-footer">
+      <p-button label="Cancelar" icon="pi pi-times" styleClass="p-button-text" (onClick)="fecharDialog()"></p-button>
+      <p-button label="Salvar" icon="pi pi-check" type="submit" [disabled]="produtoForm.invalid"></p-button>
+    </div>
+  </form>
+</p-dialog>
