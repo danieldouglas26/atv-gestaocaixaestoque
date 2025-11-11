@@ -57,7 +57,7 @@ public class VendaService {
             Produto produto = produtoRepository.findById(itemDTO.getProdutoId())
                     .orElseThrow(() -> new RuntimeException("Produto não encontrado com ID: " + itemDTO.getProdutoId()));
             
-            if (!produtoService.verificarEstoqueSuficiente(produto.getId(), itemDTO.getQuantidade())) {
+            if (!verificarEstoqueSuficiente(produto.getId(), itemDTO.getQuantidade())) {
                 throw new RuntimeException("Estoque insuficiente para o produto: " + produto.getNome() + 
                                          ". Disponível: " + produto.getQuantidadeEstoque() + 
                                          ", Solicitado: " + itemDTO.getQuantidade());
@@ -86,6 +86,21 @@ public class VendaService {
         Venda vendaSalva = vendaRepository.save(venda);
         
         return toResponseDTO(vendaSalva);
+    }
+    
+    
+    private boolean verificarEstoqueSuficiente(Long produtoId, BigDecimal quantidade) {
+        if (quantidade.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException("Quantidade deve ser maior que zero");
+        }
+        
+        Optional<Produto> produtoOpt = produtoRepository.findById(produtoId);
+        if (produtoOpt.isEmpty()) {
+            throw new RuntimeException("Produto não encontrado com ID: " + produtoId);
+        }
+        
+        Produto produto = produtoOpt.get();
+        return produto.getQuantidadeEstoque().compareTo(quantidade) >= 0;
     }
     
     public List<VendaResponseDTO> listarTodas() {

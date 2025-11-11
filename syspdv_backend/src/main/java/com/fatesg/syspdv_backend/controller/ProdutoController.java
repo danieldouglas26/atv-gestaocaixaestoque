@@ -1,7 +1,6 @@
 package com.fatesg.syspdv_backend.controller;
 
-import com.fatesg.syspdv_backend.dto.ProdutoRequestDTO;
-import com.fatesg.syspdv_backend.dto.ProdutoResponseDTO;
+import com.fatesg.syspdv_backend.dto.*;
 import com.fatesg.syspdv_backend.service.ProdutoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -16,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -118,6 +116,7 @@ public class ProdutoController {
         return deletado ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
     
+    // NOVOS ENDPOINTS COM BODY
     
     @Operation(summary = "Baixar estoque", description = "Realiza baixa de estoque para venda")
     @ApiResponses(value = {
@@ -125,14 +124,12 @@ public class ProdutoController {
         @ApiResponse(responseCode = "400", description = "Dados inválidos ou estoque insuficiente"),
         @ApiResponse(responseCode = "404", description = "Produto não encontrado")
     })
-    @PostMapping("/{id}/baixar-estoque")
+    @PostMapping("/baixar-estoque")
     public ResponseEntity<?> baixarEstoque(
-            @Parameter(description = "ID do produto", example = "1") 
-            @PathVariable Long id,
-            @Parameter(description = "Quantidade para baixa") 
-            @RequestParam BigDecimal quantidade) {
+            @Parameter(description = "Dados para baixa de estoque") 
+            @Valid @RequestBody EstoqueMovimentacaoRequestDTO movimentacaoDTO) {
         try {
-            ProdutoResponseDTO produtoAtualizado = produtoService.baixarEstoque(id, quantidade);
+            ProdutoResponseDTO produtoAtualizado = produtoService.baixarEstoque(movimentacaoDTO);
             return ResponseEntity.ok(produtoAtualizado);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -145,14 +142,12 @@ public class ProdutoController {
         @ApiResponse(responseCode = "400", description = "Dados inválidos"),
         @ApiResponse(responseCode = "404", description = "Produto não encontrado")
     })
-    @PostMapping("/{id}/repor-estoque")
+    @PostMapping("/repor-estoque")
     public ResponseEntity<?> reporEstoque(
-            @Parameter(description = "ID do produto", example = "1") 
-            @PathVariable Long id,
-            @Parameter(description = "Quantidade para reposição") 
-            @RequestParam BigDecimal quantidade) {
+            @Parameter(description = "Dados para reposição de estoque") 
+            @Valid @RequestBody EstoqueMovimentacaoRequestDTO movimentacaoDTO) {
         try {
-            ProdutoResponseDTO produtoAtualizado = produtoService.reporEstoque(id, quantidade);
+            ProdutoResponseDTO produtoAtualizado = produtoService.reporEstoque(movimentacaoDTO);
             return ResponseEntity.ok(produtoAtualizado);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -165,16 +160,12 @@ public class ProdutoController {
         @ApiResponse(responseCode = "400", description = "Dados inválidos ou estoque insuficiente"),
         @ApiResponse(responseCode = "404", description = "Produto não encontrado")
     })
-    @PostMapping("/{id}/ajustar-estoque")
+    @PostMapping("/ajustar-estoque")
     public ResponseEntity<?> ajustarEstoque(
-            @Parameter(description = "ID do produto", example = "1") 
-            @PathVariable Long id,
-            @Parameter(description = "Quantidade para ajuste (positivo para entrada, negativo para saída)") 
-            @RequestParam BigDecimal quantidade,
-            @Parameter(description = "Motivo do ajuste") 
-            @RequestParam(defaultValue = "Ajuste de estoque") String motivo) {
+            @Parameter(description = "Dados para ajuste de estoque") 
+            @Valid @RequestBody EstoqueMovimentacaoRequestDTO movimentacaoDTO) {
         try {
-            ProdutoResponseDTO produtoAtualizado = produtoService.ajustarEstoque(id, quantidade, motivo);
+            ProdutoResponseDTO produtoAtualizado = produtoService.ajustarEstoque(movimentacaoDTO);
             return ResponseEntity.ok(produtoAtualizado);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -184,19 +175,18 @@ public class ProdutoController {
     @Operation(summary = "Verificar estoque", description = "Verifica se há estoque suficiente para uma quantidade")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Verificação realizada com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Dados inválidos"),
         @ApiResponse(responseCode = "404", description = "Produto não encontrado")
     })
-    @GetMapping("/{id}/verificar-estoque")
-    public ResponseEntity<Boolean> verificarEstoque(
-            @Parameter(description = "ID do produto", example = "1") 
-            @PathVariable Long id,
-            @Parameter(description = "Quantidade necessária") 
-            @RequestParam BigDecimal quantidade) {
-        boolean estoqueSuficiente = produtoService.verificarEstoqueSuficiente(id, quantidade);
-        return ResponseEntity.ok(estoqueSuficiente);
+    @PostMapping("/verificar-estoque")
+    public ResponseEntity<?> verificarEstoque(
+            @Parameter(description = "Dados para verificação de estoque") 
+            @Valid @RequestBody EstoqueVerificacaoRequestDTO verificacaoDTO) {
+        try {
+            boolean estoqueSuficiente = produtoService.verificarEstoqueSuficiente(verificacaoDTO);
+            return ResponseEntity.ok(estoqueSuficiente);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
-    
-    
-    
-    
 }
