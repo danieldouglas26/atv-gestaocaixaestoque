@@ -36,44 +36,51 @@
                 {{ prod.quantidadeEstoque }}
             </span>
         </td>
-        <td class="text-center">
-          <p-button
-            icon="pi pi-arrows-h"
-            pTooltip="Movimentar Estoque"
-            tooltipPosition="top"
-            [rounded]="true"
-            [text]="true"
-            severity="info"
-            (onClick)="abrirDialogAjuste(prod)">
-          </p-button>
-          <p-button
-    icon="pi pi-history"
-    pTooltip="Ver Histórico"
-    tooltipPosition="top"
-    [rounded]="true"
-    [text]="true"
-    severity="secondary"
-    (onClick)="abrirHistorico(prod)">
-  </p-button>
-          <p-button
-            icon="pi pi-pencil"
-            pTooltip="Editar Produto"
-            tooltipPosition="top"
-            [rounded]="true"
-            [text]="true"
-            severity="success"
-            (onClick)="abrirDialogEditar(prod)">
-          </p-button>
-          <p-button
-            icon="pi pi-trash"
-            pTooltip="Excluir Produto"
-            tooltipPosition="top"
-            [rounded]="true"
-            [text]="true"
-            severity="danger"
-            (onClick)="excluirProduto(prod.id)">
-          </p-button>
-        </td>
+       <td class="text-center">
+  <div class="flex justify-content-center gap-2">
+    
+    <p-button
+      icon="pi pi-arrows-h"
+      pTooltip="Movimentar"
+      tooltipPosition="top"
+      [rounded]="true"
+      [text]="true"
+      severity="info"
+      (onClick)="abrirDialogAjuste(prod)">
+    </p-button>
+
+    <p-button
+      icon="pi pi-history"
+      pTooltip="Histórico"
+      tooltipPosition="top"
+      [rounded]="true"
+      [text]="true"
+      severity="help" 
+      (onClick)="abrirHistorico(prod)">
+    </p-button>
+
+    <p-button
+      icon="pi pi-pencil"
+      pTooltip="Editar"
+      tooltipPosition="top"
+      [rounded]="true"
+      [text]="true"
+      severity="success"
+      (onClick)="abrirDialogEditar(prod)">
+    </p-button>
+
+    <p-button
+      icon="pi pi-trash"
+      pTooltip="Excluir"
+      tooltipPosition="top"
+      [rounded]="true"
+      [text]="true"
+      severity="danger"
+      (onClick)="excluirProduto(prod.id)">
+    </p-button>
+
+  </div>
+</td>
       </tr>
     </ng-template>
     <ng-template pTemplate="emptymessage">
