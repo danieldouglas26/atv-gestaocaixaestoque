@@ -1,63 +1,73 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CardModule } from 'primeng/card';
+import { TableModule } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
+import { VendaService } from '../../core/services/venda.service';
+import { ProdutoService } from '../../core/services/produto.service';
+import { Venda } from '../../core/models/user.model';
+import { TooltipModule } from 'primeng/tooltip'; // Adicionei o Tooltip que estava no HTML
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, CardModule],
-  template: `
-    <div class="grid-dashboard">
-      <div class="card flex justify-content-between align-items-center mb-0">
-        <div>
-          <span class="block text-500 font-medium mb-3">Vendas (Hoje)</span>
-          <div class="text-900 font-bold text-3xl">R$ 1.250,00</div>
-        </div>
-        <div class="flex align-items-center justify-content-center bg-blue-100 border-round" style="width:2.5rem;height:2.5rem">
-          <i class="pi pi-shopping-cart text-blue-500 text-xl"></i>
-        </div>
-      </div>
-
-      <div class="card flex justify-content-between align-items-center mb-0">
-        <div>
-          <span class="block text-500 font-medium mb-3">Lucro Estimado</span>
-          <div class="text-900 font-bold text-3xl">R$ 450,00</div>
-        </div>
-        <div class="flex align-items-center justify-content-center bg-green-100 border-round" style="width:2.5rem;height:2.5rem">
-          <i class="pi pi-money-bill text-green-500 text-xl"></i>
-        </div>
-      </div>
-
-      <div class="card flex justify-content-between align-items-center mb-0">
-        <div>
-          <span class="block text-500 font-medium mb-3">Novos Clientes</span>
-          <div class="text-900 font-bold text-3xl">24</div>
-        </div>
-        <div class="flex align-items-center justify-content-center bg-cyan-100 border-round" style="width:2.5rem;height:2.5rem">
-          <i class="pi pi-users text-cyan-500 text-xl"></i>
-        </div>
-      </div>
-    </div>
-
-    <div class="card mt-3">
-        <h3>Atividades Recentes</h3>
-        <p>Gráfico ou tabela de últimas vendas viria aqui...</p>
-    </div>
-  `,
-  styles: [`
-    .grid-dashboard {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1.5rem;
-    }
-    /* Classes utilitárias inline para os ícones coloridos (simulando PrimeFlex sem instalar) */
-    .bg-blue-100 { background-color: #dbeafe; }
-    .text-blue-500 { color: #3b82f6; }
-    .bg-green-100 { background-color: #dcfce7; }
-    .text-green-500 { color: #22c55e; }
-    .bg-cyan-100 { background-color: #cffafe; }
-    .text-cyan-500 { color: #06b6d4; }
-    .border-round { border-radius: 6px; }
-  `]
+  imports: [
+    CommonModule, 
+    CardModule, 
+    TableModule, 
+    ButtonModule,
+    TooltipModule
+  ],
+  templateUrl: './dashboard.component.html',
+  styleUrl: './dashboard.component.scss'
 })
-export class DashboardComponent {}
+export class DashboardComponent implements OnInit {
+  private vendaService = inject(VendaService);
+  private produtoService = inject(ProdutoService);
+
+  // Indicadores
+  faturamentoHoje: number = 0;
+  vendasHojeCount: number = 0;
+  produtosBaixoEstoqueCount: number = 0;
+  
+  // Tabela
+  ultimasVendas: Venda[] = [];
+
+  ngOnInit(): void {
+    this.carregarDados();
+  }
+
+  carregarDados(): void {
+    // 1. Carregar Vendas e Calcular Indicadores do Dia
+    this.vendaService.listarVendas().subscribe({
+      next: (vendas) => {
+        const hoje = new Date();
+        
+        // Filtra vendas que aconteceram hoje
+        const vendasDoDia = vendas.filter(v => {
+            const dataVenda = new Date(v.dataHora);
+            return dataVenda.getDate() === hoje.getDate() &&
+                   dataVenda.getMonth() === hoje.getMonth() &&
+                   dataVenda.getFullYear() === hoje.getFullYear();
+        });
+
+        // Soma o total
+        this.faturamentoHoje = vendasDoDia.reduce((acc, v) => acc + v.valorTotal, 0);
+        this.vendasHojeCount = vendasDoDia.length;
+
+        // Pega as 5 últimas para a tabela (Ordena decrescente por data)
+        this.ultimasVendas = [...vendas]
+            .sort((a, b) => new Date(b.dataHora).getTime() - new Date(a.dataHora).getTime())
+            .slice(0, 5);
+      }
+    });
+
+    // 2. Carregar Produtos e Verificar Estoque Crítico
+    this.produtoService.listar().subscribe({
+      next: (produtos) => {
+        // Conta produtos com 5 ou menos unidades
+        this.produtosBaixoEstoqueCount = produtos.filter(p => p.quantidadeEstoque <= 5).length;
+      }
+    });
+  }
+}

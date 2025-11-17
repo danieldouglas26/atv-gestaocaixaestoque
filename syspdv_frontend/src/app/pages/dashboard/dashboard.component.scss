@@ -1,0 +1,24 @@
+.grid-dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Utilitários de cores para os cards */
+.bg-blue-100 { background-color: #dbeafe; }
+.text-blue-600 { color: #2563eb; }
+
+.bg-green-100 { background-color: #dcfce7; }
+.text-green-600 { color: #16a34a; }
+
+.bg-orange-100 { background-color: #ffedd5; }
+.text-orange-500 { color: #f97316; }
+.text-orange-600 { color: #ea580c; }
+
+.border-round { border-radius: 12px; }
+
+/* Ajuste para garantir altura igual nos cards */
+:host ::ng-deep .p-card {
+    height: 100%;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+}
