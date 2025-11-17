@@ -79,3 +79,22 @@ export interface VendaPayload {
   valorRecebido: number;
   usuarioId: number;
 }
+
+export interface ItemVendaPayload {
+  produtoId: number;
+  quantidade: number;
+}
+
+export interface VendaPayload {
+  itens: ItemVendaPayload[];
+  valorRecebido: number;
+  usuarioId: number;
+}
+
+// [NOVO] Interface para movimentação de estoque (Ajuste, Baixa, Reposição)
+export interface EstoqueMovimentoPayload {
+  produtoId: number;
+  quantidade: number;
+  motivo?: string; // Opcional em alguns casos, obrigatório em outros
+  codigo?: string; // A API lista, mas geralmente o ID basta (opcional)
+}

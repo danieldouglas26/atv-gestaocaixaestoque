@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Produto } from '../models/user.model';
+import { EstoqueMovimentoPayload, Produto } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +11,7 @@ export class ProdutoService {
 
   constructor(private http: HttpClient) { }
 
-  // --- CRUD Básico (Já implementado) ---
+  // --- CRUD Básico (Mantido igual, pois a API não mudou nestes pontos) ---
 
   listar(): Observable<Produto[]> {
     return this.http.get<Produto[]>(this.baseUrl);
@@ -19,6 +19,10 @@ export class ProdutoService {
 
   buscarPorId(id: number): Observable<Produto> {
     return this.http.get<Produto>(`${this.baseUrl}/${id}`);
+  }
+
+  buscarPorCodigo(codigo: string): Observable<Produto> {
+    return this.http.get<Produto>(`${this.baseUrl}/codigo/${codigo}`);
   }
 
   criar(produto: Omit<Produto, 'id'>): Observable<Produto> {
@@ -33,52 +37,37 @@ export class ProdutoService {
     return this.http.delete(`${this.baseUrl}/${id}`);
   }
 
-  // --- NOVOS ENDPOINTS (Movimentação de Estoque) ---
+  // --- NOVOS ENDPOINTS (Movimentação de Estoque - ATUALIZADO) ---
 
   /**
    * Realiza ajuste de estoque (positivo ou negativo) com motivo.
-   * (Usado pelo Admin na tela de Gestão de Estoque)
+   * Agora envia um JSON Body para /api/produtos/ajustar-estoque
    */
-  ajustarEstoque(id: number, quantidade: number, motivo: string): Observable<any> {
-    const params = new HttpParams()
-      .set('quantidade', quantidade.toString())
-      .set('motivo', motivo);
-    return this.http.post(`${this.baseUrl}/${id}/ajustar-estoque`, null, { params });
+  ajustarEstoque(payload: EstoqueMovimentoPayload): Observable<any> {
+    return this.http.post(`${this.baseUrl}/ajustar-estoque`, payload);
   }
 
   /**
    * Realiza reposição de estoque (apenas positivo).
+   * Agora envia um JSON Body para /api/produtos/repor-estoque
    */
-  reporEstoque(id: number, quantidade: number): Observable<any> {
-    const params = new HttpParams().set('quantidade', quantidade.toString());
-    return this.http.post(`${this.baseUrl}/${id}/repor-estoque`, null, { params });
+  reporEstoque(payload: EstoqueMovimentoPayload): Observable<any> {
+    return this.http.post(`${this.baseUrl}/repor-estoque`, payload);
   }
 
   /**
    * Realiza baixa de estoque (apenas positivo).
-   * (Usado pela tela de Vendas/Caixa)
+   * Agora envia um JSON Body para /api/produtos/baixar-estoque
    */
-  baixarEstoque(id: number, quantidade: number): Observable<any> {
-    const params = new HttpParams().set('quantidade', quantidade.toString());
-    return this.http.post(`${this.baseUrl}/${id}/baixar-estoque`, null, { params });
+  baixarEstoque(payload: EstoqueMovimentoPayload): Observable<any> {
+    return this.http.post(`${this.baseUrl}/baixar-estoque`, payload);
   }
-
-  // --- NOVOS ENDPOINTS (Consulta) ---
 
   /**
    * Verifica se a quantidade solicitada está disponível.
-   * (Usado pela tela de Vendas/Caixa)
+   * MUDOU DE GET PARA POST conforme documentação
    */
-  verificarEstoque(id: number, quantidade: number): Observable<boolean> {
-    const params = new HttpParams().set('quantidade', quantidade.toString());
-    return this.http.get<boolean>(`${this.baseUrl}/${id}/verificar-estoque`, { params });
-  }
-
-  /**
-   * Busca um produto pelo seu código.
-   * (Usado pela tela de Vendas/Caixa)
-   */
-  buscarPorCodigo(codigo: string): Observable<Produto> {
-    return this.http.get<Produto>(`${this.baseUrl}/codigo/${codigo}`);
+  verificarEstoque(payload: EstoqueMovimentoPayload): Observable<any> {
+    return this.http.post(`${this.baseUrl}/verificar-estoque`, payload);
   }
 }

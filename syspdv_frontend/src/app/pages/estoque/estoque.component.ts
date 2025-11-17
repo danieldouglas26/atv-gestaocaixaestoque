@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormControl } 
 import { CommonModule } from '@angular/common';
 import { MessageService } from 'primeng/api';
 import { ProdutoService } from '../../core/services/produto.service';
-import { Produto } from '../../core/models/user.model';
+import { EstoqueMovimentoPayload, Produto } from '../../core/models/user.model';
 
 // Imports de PrimeNG
 import { TableModule } from 'primeng/table';
@@ -12,11 +12,11 @@ import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { ToastModule } from 'primeng/toast';
-import { InputTextarea } from 'primeng/inputtextarea'; // <-- CORRIGIDO (era InputTextareaModule)
+import { InputTextarea } from 'primeng/inputtextarea';
 import { TooltipModule } from 'primeng/tooltip';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
-
+import { TabViewModule } from 'primeng/tabview'; // <--- Importante para as abas
 
 @Component({
   selector: 'app-estoque',
@@ -30,10 +30,11 @@ import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
     InputTextModule,
     InputNumberModule,
     ToastModule,
-    InputTextarea, // <-- CORRIGIDO (era InputTextareaModule)
+    InputTextarea,
     TooltipModule,
     InputGroupModule,
-    InputGroupAddonModule
+    InputGroupAddonModule,
+    TabViewModule
   ],
   templateUrl: './estoque.component.html',
   styleUrl: './estoque.component.scss'
@@ -44,29 +45,31 @@ export class EstoqueComponent implements OnInit {
   private messageService = inject(MessageService);
 
   produtos: Produto[] = [];
-  produtosOriginal: Produto[] = []; // Guarda a lista completa
+  produtosOriginal: Produto[] = [];
 
-  // --- LÓGICA DE BUSCA ---
+  // --- BUSCA ---
   searchControl = new FormControl('');
 
-  // Formulário de CRUD (Novo/Editar)
+  // --- CRUD PRODUTO ---
   produtoForm: FormGroup;
   dialogVisivel = false;
   isEditMode = false;
   currentProdutoId: number | null = null;
 
-  // Formulário de Ajuste de Estoque
+  // --- MOVIMENTAÇÃO DE ESTOQUE ---
   ajusteDialogVisivel = false;
-  ajusteForm: FormGroup;
   currentProdutoAjuste: Produto | null = null;
 
-  // Helper getter para validação do formulário de produto
+  // Formulários separados para cada aba
+  formRepor: FormGroup;
+  formBaixar: FormGroup;
+  formAjuste: FormGroup;
+
+  // Helpers para o template
   get f() { return this.produtoForm.controls; }
-  // Helper getter para validação do formulário de ajuste
-  get af() { return this.ajusteForm.controls; }
 
   constructor() {
-    // Form de CRUD (com validações mais estritas)
+    // Form principal do Produto (CRUD)
     this.produtoForm = this.fb.group({
       codigo: ['', Validators.required],
       nome: ['', Validators.required],
@@ -75,9 +78,21 @@ export class EstoqueComponent implements OnInit {
       quantidadeEstoque: [null, [Validators.required, Validators.min(0)]]
     });
 
-    // Form de Ajuste (com validação para não-zero)
-    this.ajusteForm = this.fb.group({
-      quantidade: [null, [Validators.required, Validators.pattern(/^-?[1-9]\d*$/), Validators.min(-9999), Validators.max(9999)]],
+    // 1. Aba Repor (Aumentar Estoque)
+    this.formRepor = this.fb.group({
+      quantidade: [null, [Validators.required, Validators.min(1)]],
+      motivo: ['', [Validators.required, Validators.minLength(5)]]
+    });
+
+    // 2. Aba Baixar (Diminuir Estoque)
+    this.formBaixar = this.fb.group({
+      quantidade: [null, [Validators.required, Validators.min(1)]],
+      motivo: ['', [Validators.required, Validators.minLength(5)]]
+    });
+
+    // 3. Aba Ajuste (Definir Valor Final / Inventário)
+    this.formAjuste = this.fb.group({
+      estoqueFinal: [null, [Validators.required, Validators.min(0)]],
       motivo: ['', [Validators.required, Validators.minLength(5)]]
     });
   }
@@ -89,11 +104,11 @@ export class EstoqueComponent implements OnInit {
   carregarProdutos(): void {
     this.produtoService.listar().subscribe(data => {
       this.produtos = data;
-      this.produtosOriginal = [...data]; // Salva a lista original
+      this.produtosOriginal = [...data];
     });
   }
 
-  // --- LÓGICA DE BUSCA ---
+  // --- BUSCA ---
 
   buscarProduto(): void {
     const codigo = this.searchControl.value;
@@ -104,11 +119,11 @@ export class EstoqueComponent implements OnInit {
 
     this.produtoService.buscarPorCodigo(codigo.trim()).subscribe({
       next: (produto) => {
-        this.produtos = [produto]; // Exibe apenas o produto encontrado
+        this.produtos = [produto];
         this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: `Produto ${produto.codigo} encontrado.` });
       },
-      error: (err) => {
-        this.produtos = []; // Limpa a tabela se não encontrar
+      error: () => {
+        this.produtos = [];
         this.messageService.add({ severity: 'error', summary: 'Erro', detail: `Produto com código '${codigo}' não foi encontrado.` });
       }
     });
@@ -116,22 +131,21 @@ export class EstoqueComponent implements OnInit {
 
   limparBusca(): void {
     this.searchControl.setValue('');
-    this.produtos = [...this.produtosOriginal]; // Restaura a lista completa
+    this.produtos = [...this.produtosOriginal];
   }
 
-
-  // --- Métodos de CRUD (Já implementados) ---
+  // --- CRUD ---
 
   abrirDialogNovo(): void {
     this.isEditMode = false;
-    this.produtoForm.reset(); // Limpa todos os campos
+    this.produtoForm.reset();
     this.dialogVisivel = true;
   }
 
   abrirDialogEditar(produto: Produto): void {
     this.isEditMode = true;
     this.currentProdutoId = produto.id;
-    this.produtoForm.patchValue(produto); // Preenche o formulário
+    this.produtoForm.patchValue(produto);
     this.dialogVisivel = true;
   }
 
@@ -142,7 +156,6 @@ export class EstoqueComponent implements OnInit {
 
   salvarProduto(): void {
     if (this.produtoForm.invalid) {
-      // Marca todos os campos como "tocados" para exibir os erros
       this.produtoForm.markAllAsTouched();
       this.messageService.add({ severity: 'warn', summary: 'Atenção', detail: 'Preencha os campos obrigatórios.' });
       return;
@@ -160,31 +173,38 @@ export class EstoqueComponent implements OnInit {
         this.fecharDialog();
       },
       error: (err) => {
-        this.messageService.add({ severity: 'error', summary: 'Erro', detail: err.error?.message || 'Erro ao salvar produto. Verifique se o código já existe.' });
+        this.messageService.add({ severity: 'error', summary: 'Erro', detail: err.error?.message || 'Erro ao salvar produto.' });
       }
     });
   }
 
   excluirProduto(id: number): void {
-    // RECOMENDAÇÃO: Usar p-confirmDialog aqui no futuro
     if (confirm('Tem certeza que deseja excluir este produto?')) {
       this.produtoService.excluir(id).subscribe({
         next: () => {
           this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Produto excluído com sucesso!' });
           this.carregarProdutos();
         },
-        error: (err) => {
+        error: () => {
           this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Erro ao excluir produto' });
         }
       });
     }
   }
 
-  // --- MÉTODOS DE AJUSTE DE ESTOQUE (Já implementados) ---
+  // --- MOVIMENTAÇÃO DE ESTOQUE (ABAS) ---
 
   abrirDialogAjuste(produto: Produto): void {
     this.currentProdutoAjuste = produto;
-    this.ajusteForm.reset(); // Limpa o formulário de ajuste
+    
+    // Reseta os formulários das abas
+    this.formRepor.reset();
+    this.formBaixar.reset();
+    this.formAjuste.reset();
+
+    // Pré-preenche o formulário de Ajuste com o valor atual para facilitar
+    this.formAjuste.patchValue({ estoqueFinal: produto.quantidadeEstoque });
+
     this.ajusteDialogVisivel = true;
   }
 
@@ -193,23 +213,88 @@ export class EstoqueComponent implements OnInit {
     this.currentProdutoAjuste = null;
   }
 
-  salvarAjuste(): void {
-    if (this.ajusteForm.invalid || !this.currentProdutoAjuste) {
-      this.ajusteForm.markAllAsTouched();
-      this.messageService.add({ severity: 'warn', summary: 'Atenção', detail: 'Quantidade (diferente de zero) e Motivo (mín. 5 chars) são obrigatórios.' });
+  // 1. Ação: REPOR (API espera quantidade positiva)
+  onRepor(): void {
+    if (this.formRepor.invalid || !this.currentProdutoAjuste) {
+      this.formRepor.markAllAsTouched();
+      return;
+    }
+    const { quantidade, motivo } = this.formRepor.value;
+
+    const payload: EstoqueMovimentoPayload = {
+      produtoId: this.currentProdutoAjuste.id,
+      codigo: this.currentProdutoAjuste.codigo,
+      quantidade: quantidade,
+      motivo: motivo
+    };
+
+    this.produtoService.reporEstoque(payload).subscribe({
+      next: () => this.handleSucessoMovimentacao('Estoque reposto com sucesso!'),
+      error: (err) => this.handleErroMovimentacao(err)
+    });
+  }
+
+  // 2. Ação: BAIXAR (API espera quantidade positiva que será subtraída)
+  onBaixar(): void {
+    if (this.formBaixar.invalid || !this.currentProdutoAjuste) {
+      this.formBaixar.markAllAsTouched();
+      return;
+    }
+    const { quantidade, motivo } = this.formBaixar.value;
+
+    const payload: EstoqueMovimentoPayload = {
+      produtoId: this.currentProdutoAjuste.id,
+      codigo: this.currentProdutoAjuste.codigo,
+      quantidade: quantidade,
+      motivo: motivo
+    };
+
+    this.produtoService.baixarEstoque(payload).subscribe({
+      next: () => this.handleSucessoMovimentacao('Baixa de estoque realizada!'),
+      error: (err) => this.handleErroMovimentacao(err)
+    });
+  }
+
+  // 3. Ação: AJUSTAR (API espera a diferença: Valor Final - Valor Atual)
+  onAjustar(): void {
+    if (this.formAjuste.invalid || !this.currentProdutoAjuste) {
+      this.formAjuste.markAllAsTouched();
+      return;
+    }
+    const { estoqueFinal, motivo } = this.formAjuste.value;
+    
+    // Cálculo da diferença
+    const diferenca = estoqueFinal - this.currentProdutoAjuste.quantidadeEstoque;
+
+    if (diferenca === 0) {
+      this.messageService.add({ severity: 'info', summary: 'Sem alterações', detail: 'O estoque final é igual ao atual.' });
       return;
     }
 
-    const { quantidade, motivo } = this.ajusteForm.value;
-    this.produtoService.ajustarEstoque(this.currentProdutoAjuste.id, quantidade, motivo).subscribe({
-      next: () => {
-        this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Estoque ajustado com sucesso!' });
-        this.carregarProdutos();
-        this.fecharDialogAjuste();
-      },
-      error: (err) => {
-        this.messageService.add({ severity: 'error', summary: 'Erro', detail: err.error?.message || 'Erro ao ajustar estoque. (Estoque insuficiente?)' });
-      }
+    const payload: EstoqueMovimentoPayload = {
+      produtoId: this.currentProdutoAjuste.id,
+      codigo: this.currentProdutoAjuste.codigo,
+      quantidade: diferenca, // Envia a diferença (pode ser negativa ou positiva)
+      motivo: motivo
+    };
+
+    this.produtoService.ajustarEstoque(payload).subscribe({
+      next: () => this.handleSucessoMovimentacao('Inventário ajustado com sucesso!'),
+      error: (err) => this.handleErroMovimentacao(err)
+    });
+  }
+
+  private handleSucessoMovimentacao(msg: string): void {
+    this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: msg });
+    this.carregarProdutos();
+    this.fecharDialogAjuste();
+  }
+
+  private handleErroMovimentacao(err: any): void {
+    this.messageService.add({ 
+        severity: 'error', 
+        summary: 'Erro', 
+        detail: err.error?.message || 'Erro ao processar movimentação.' 
     });
   }
 }
