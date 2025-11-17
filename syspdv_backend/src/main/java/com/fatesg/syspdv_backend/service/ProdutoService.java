@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fatesg.syspdv_backend.dto.EstoqueMovimentacaoRequestDTO;
 import com.fatesg.syspdv_backend.dto.EstoqueVerificacaoRequestDTO;
+import com.fatesg.syspdv_backend.dto.MovimentacaoEstoqueResponseDTO;
 import com.fatesg.syspdv_backend.dto.ProdutoRequestDTO;
 import com.fatesg.syspdv_backend.dto.ProdutoResponseDTO;
 import com.fatesg.syspdv_backend.model.Produto;
@@ -186,7 +187,24 @@ public class ProdutoService {
         return toResponseDTO(produtoAtualizado);
     }
 
+public List<MovimentacaoEstoqueResponseDTO> buscarHistorico(Long id) {
+        if (!produtoRepository.existsById(id)) {
+            throw new RuntimeException("Produto não encontrado com ID: " + id);
+        }
 
+        return movimentacaoEstoqueService.buscarPorProduto(id)
+                .stream()
+                .map(mov -> new MovimentacaoEstoqueResponseDTO(
+                    mov.getId(),
+                    mov.getDataHora(),
+                    mov.getTipo().name(), // Retorna "ENTRADA", "SAIDA" ou "INVENTARIO"
+                    mov.getQuantidade(),
+                    mov.getMotivo(),
+                    null // Usuário ainda não vinculado na entidade
+                ))
+                .collect(Collectors.toList());
+    }
+    
     public boolean verificarEstoqueSuficiente(EstoqueVerificacaoRequestDTO verificacaoDTO) {
         validarVerificacaoDTO(verificacaoDTO);
         

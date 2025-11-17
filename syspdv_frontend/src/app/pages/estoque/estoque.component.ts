@@ -246,7 +246,7 @@ export class EstoqueComponent implements OnInit {
     switch (tipo) {
       case 'ENTRADA': return 'success'; // Verde
       case 'SAIDA': return 'danger';    // Vermelho
-      case 'AJUSTE': return 'warning';  // Laranja
+      case 'INVENTARIO': return 'warning';  // Laranja
       default: return 'info';
     }
   }

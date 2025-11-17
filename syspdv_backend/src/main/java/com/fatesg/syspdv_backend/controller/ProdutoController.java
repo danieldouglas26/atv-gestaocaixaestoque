@@ -1,7 +1,28 @@
 package com.fatesg.syspdv_backend.controller;
 
-import com.fatesg.syspdv_backend.dto.*;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.fatesg.syspdv_backend.dto.EstoqueMovimentacaoRequestDTO;
+import com.fatesg.syspdv_backend.dto.EstoqueVerificacaoRequestDTO;
+import com.fatesg.syspdv_backend.dto.MovimentacaoEstoqueResponseDTO;
+import com.fatesg.syspdv_backend.dto.ProdutoRequestDTO;
+import com.fatesg.syspdv_backend.dto.ProdutoResponseDTO;
 import com.fatesg.syspdv_backend.service.ProdutoService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -10,13 +31,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/produtos")
@@ -63,6 +77,23 @@ public class ProdutoController {
                      .orElse(ResponseEntity.notFound().build());
     }
     
+@Operation(summary = "Histórico de movimentações", description = "Retorna o histórico de movimentações de um produto")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Histórico retornado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Produto não encontrado")
+    })
+    @GetMapping("/{id}/historico")
+    public ResponseEntity<List<MovimentacaoEstoqueResponseDTO>> buscarHistorico(
+            @Parameter(description = "ID do produto", example = "1") 
+            @PathVariable Long id) {
+        try {
+            List<MovimentacaoEstoqueResponseDTO> historico = produtoService.buscarHistorico(id);
+            return ResponseEntity.ok(historico);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @Operation(summary = "Criar novo produto", description = "Cria um novo produto no sistema")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Produto criado com sucesso", 
