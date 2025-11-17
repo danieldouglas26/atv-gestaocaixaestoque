@@ -1,7 +1,8 @@
 .layout-wrapper {
     display: flex;
     min-height: 100vh;
-    background-color: var(--p-surface-50); /* Fundo geral */
+    background-color: var(--p-surface-50);
+    transition: all 0.3s;
 }
 
 .layout-sidebar {
@@ -13,7 +14,9 @@
     position: fixed;
     height: 100vh;
     z-index: 999;
-    transition: all 0.3s;
+    transition: transform 0.3s; /* Suaviza a entrada/saída */
+    left: 0;
+    top: 0;
 
     .sidebar-header {
         height: 70px;
@@ -35,15 +38,16 @@
 
 .layout-main {
     flex: 1;
-    margin-left: 260px; /* Espaço da sidebar */
+    margin-left: 260px; /* Margem padrão quando o menu está aberto */
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    transition: margin-left 0.3s; /* Suaviza o ajuste da margem */
 }
 
 .layout-topbar {
     height: 70px;
-    background-color: rgba(255, 255, 255, 0.8); /* Glassmorphism leve */
+    background-color: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(8px);
     border-bottom: 1px solid var(--p-surface-200);
     display: flex;
@@ -60,8 +64,23 @@
     flex: 1;
 }
 
+/* --- ESTADO CONTRAÍDO --- */
+.layout-wrapper.layout-static-inactive {
+    .layout-sidebar {
+        transform: translateX(-100%); /* Move o menu para fora da tela */
+    }
+    
+    .layout-main {
+        margin-left: 0; /* Remove a margem para ocupar a tela toda */
+    }
+}
+
 /* Responsividade simples */
 @media (max-width: 768px) {
     .layout-sidebar { transform: translateX(-100%); }
     .layout-main { margin-left: 0; }
+    
+    /* Opcional: Se quiser que o botão abra o menu no mobile, 
+       pode adicionar lógica extra aqui ou no TS, mas o padrão 
+       acima já esconde corretamente. */
 }

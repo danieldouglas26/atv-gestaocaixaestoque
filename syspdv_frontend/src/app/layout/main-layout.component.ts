@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, effect } from '@angular/core'; // Importe 'effect'
+import { Component, OnInit, inject, effect } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { AuthService } from '../core/services/auth.service';
 import { User } from '../core/models/user.model';
@@ -26,16 +26,14 @@ export class MainLayoutComponent implements OnInit {
   router = inject(Router);
 
   menuItems: MenuItem[] = [];
-
-  // Cria um "computed" simples apenas acessando o signal para uso no template
   currentUser = this.authService.currentUser;
 
+  // Controle de visibilidade do menu
+  sidebarVisible = true; 
+
   constructor() {
-    // O 'effect' monitora mudanças no usuário automaticamente
     effect(() => {
       const user = this.authService.currentUser();
-      console.log('Layout: Usuário detectado:', user); // <--- Veja isso no Console (F12)
-
       if (user) {
         this.buildMenu(user);
       } else {
@@ -45,7 +43,6 @@ export class MainLayoutComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Redirecionamento inicial se necessário
     if (this.router.url === '/app' || this.router.url === '/app/') {
       const user = this.authService.currentUser();
       if (user?.perfil === 'ADMIN') {
@@ -54,6 +51,24 @@ export class MainLayoutComponent implements OnInit {
         this.router.navigate(['/app/welcome']);
       }
     }
+  }
+
+  toggleSidebar(): void {
+    this.sidebarVisible = !this.sidebarVisible;
+  }
+
+  onLogout(): void {
+    this.authService.logout();
+  }
+
+  getPageTitle(): string {
+    const url = this.router.url;
+    if (url.includes('dashboard')) return 'Dashboard';
+    if (url.includes('usuarios')) return 'Usuários';
+    if (url.includes('estoque')) return 'Estoque';
+    if (url.includes('caixa')) return 'Caixa (PDV)';
+    if (url.includes('relatorios')) return 'Relatórios';
+    return 'SysPDV';
   }
 
   private buildMenu(user: User): void {
@@ -73,26 +88,8 @@ export class MainLayoutComponent implements OnInit {
         { label: 'Caixa / Vendas', icon: 'pi pi-fw pi-shopping-cart', routerLink: '/app/caixa' },
         { label: 'Relatórios', icon: 'pi pi-fw pi-chart-bar', routerLink: '/app/relatorios' }
       ];
-    } else {
-      console.warn('Layout: Perfil desconhecido:', role); // <--- Aviso se o perfil estiver errado
     }
 
     this.menuItems = items;
-  }
-
-  onLogout(): void {
-    this.authService.logout();
-  }
-
-  // Método auxiliar para o título (que estava faltando e gerando erro)
-  getPageTitle(): string {
-    // Lógica simples para pegar o título baseado na rota
-    const url = this.router.url;
-    if (url.includes('dashboard')) return 'Dashboard';
-    if (url.includes('usuarios')) return 'Usuários';
-    if (url.includes('estoque')) return 'Estoque';
-    if (url.includes('caixa')) return 'Caixa (PDV)';
-    if (url.includes('relatorios')) return 'Relatórios';
-    return 'SysPDV';
   }
 }
