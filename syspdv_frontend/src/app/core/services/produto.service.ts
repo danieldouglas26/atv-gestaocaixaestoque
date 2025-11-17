@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { EstoqueMovimentoPayload, Produto } from '../models/user.model';
-
+import { MovimentacaoEstoque, Produto, EstoqueMovimentoPayload } from '../models/user.model'; // Adicione MovimentacaoEstoque
 @Injectable({
   providedIn: 'root'
 })
@@ -70,4 +69,13 @@ export class ProdutoService {
   verificarEstoque(payload: EstoqueMovimentoPayload): Observable<any> {
     return this.http.post(`${this.baseUrl}/verificar-estoque`, payload);
   }
+
+  /**
+   * GET /api/produtos/{id}/historico
+   * Retorna o histórico de movimentações de um produto
+   */
+  buscarHistorico(id: number): Observable<MovimentacaoEstoque[]> {
+    return this.http.get<MovimentacaoEstoque[]>(`${this.baseUrl}/${id}/historico`);
+  }
 }
+

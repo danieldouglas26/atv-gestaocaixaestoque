@@ -47,6 +47,15 @@
             (onClick)="abrirDialogAjuste(prod)">
           </p-button>
           <p-button
+    icon="pi pi-history"
+    pTooltip="Ver Histórico"
+    tooltipPosition="top"
+    [rounded]="true"
+    [text]="true"
+    severity="secondary"
+    (onClick)="abrirHistorico(prod)">
+  </p-button>
+          <p-button
             icon="pi pi-pencil"
             pTooltip="Editar Produto"
             tooltipPosition="top"
@@ -219,4 +228,49 @@
     </p-tabPanel>
 
   </p-tabView>
+</p-dialog>
+
+<p-dialog [(visible)]="historicoDialogVisivel" header="Histórico de Movimentações" [modal]="true" [style]="{width: '700px'}" [draggable]="false" [resizable]="false">
+  
+  <div *ngIf="produtoSelecionadoHistorico" class="mb-4 flex align-items-center gap-2">
+    <i class="pi pi-box text-xl text-primary"></i>
+    <span class="text-900 font-bold text-lg">{{ produtoSelecionadoHistorico.nome }}</span>
+    <span class="text-500 ml-2">({{ produtoSelecionadoHistorico.codigo }})</span>
+  </div>
+
+  <p-table [value]="historicoMovimentacoes" [loading]="carregandoHistorico" [rows]="5" [paginator]="true" styleClass="p-datatable-sm p-datatable-striped">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Data/Hora</th>
+        <th>Tipo</th>
+        <th>Qtd.</th>
+        <th>Motivo</th>
+        <th>Usuário</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-mov>
+      <tr>
+        <td>{{ mov.dataHora | date:'dd/MM/yy HH:mm' }}</td>
+        <td>
+          <p-tag [value]="mov.tipo" [severity]="getSeverity(mov.tipo)"></p-tag>
+        </td>
+        <td class="font-bold" [class.text-green-600]="mov.quantidade > 0" [class.text-red-600]="mov.quantidade < 0">
+          {{ mov.quantidade > 0 ? '+' : '' }}{{ mov.quantidade }}
+        </td>
+        <td>{{ mov.motivo }}</td>
+        <td class="text-sm text-600">{{ mov.usuarioNome || '-' }}</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="5" class="text-center p-4 text-500">
+          Nenhuma movimentação registrada.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <div class="p-dialog-footer mt-2">
+    <p-button label="Fechar" icon="pi pi-times" (onClick)="historicoDialogVisivel = false" styleClass="p-button-text"></p-button>
+  </div>
 </p-dialog>

@@ -98,3 +98,12 @@ export interface EstoqueMovimentoPayload {
   motivo?: string; // Opcional em alguns casos, obrigatório em outros
   codigo?: string; // A API lista, mas geralmente o ID basta (opcional)
 }
+
+export interface MovimentacaoEstoque {
+  id: number;
+  dataHora: string | Date;
+  tipo: 'ENTRADA' | 'SAIDA' | 'AJUSTE'; // Ou como sua API retornar
+  quantidade: number;
+  motivo: string;
+  usuarioNome?: string; // Opcional: quem fez a alteração
+}

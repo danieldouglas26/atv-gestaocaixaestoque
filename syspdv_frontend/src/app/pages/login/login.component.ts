@@ -3,7 +3,8 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { AuthService } from '../../core/services/auth.service';
-// ... (imports de UI)
+
+// UI Modules
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { ButtonModule } from 'primeng/button';
@@ -25,7 +26,6 @@ import { CommonModule } from '@angular/common';
   styleUrl: './login.component.scss'
 })
 export class LoginComponent {
-  // ... (propriedades fb, authService, etc. continuam iguais)
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
@@ -40,7 +40,12 @@ export class LoginComponent {
 
   onSubmit() {
     if (this.loginForm.invalid) {
-      this.messageService.add({ severity: 'warn', summary: 'Atenção', detail: 'Preencha todos os campos.' });
+      this.loginForm.markAllAsTouched(); // Mostra os erros visualmente
+      this.messageService.add({ 
+        severity: 'warn', 
+        summary: 'Campos Inválidos', 
+        detail: 'Por favor, verifique seu e-mail e senha.' 
+      });
       return;
     }
 
@@ -49,14 +54,15 @@ export class LoginComponent {
 
     this.authService.login(email!, senha!).subscribe({
       next: () => {
-        // Sucesso, redireciona para a página principal
         this.router.navigate(['/app']);
-        // O isLoading será resetado naturalmente pela navegação
       },
-      error: (err: Error) => { // Agora recebemos um Error
+      error: (err: Error) => {
         this.isLoading = false;
-        // Mostra a mensagem de erro vinda do AuthService
-        this.messageService.add({ severity: 'error', summary: 'Erro', detail: err.message });
+        this.messageService.add({ 
+          severity: 'error', 
+          summary: 'Falha no Login', 
+          detail: err.message || 'Verifique suas credenciais.' 
+        });
       }
     });
   }

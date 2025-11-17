@@ -103,7 +103,10 @@ export class CaixaComponent {
       this.messageService.add({ severity: 'warn', summary: 'Atenção', detail: 'Busque um produto e informe a quantidade.' });
       return;
     }
-
+if (quantidade > produto.quantidadeEstoque) {
+   this.messageService.add({severity:'error', detail: 'Quantidade excede o estoque disponível!'});
+   return;
+}
     // Verifica se o item já está no carrinho
     const itemExistente = this.carrinho().find(item => item.produto.id === produto.id);
 

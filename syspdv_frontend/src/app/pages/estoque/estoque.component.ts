@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { MessageService } from 'primeng/api';
 import { ProdutoService } from '../../core/services/produto.service';
 import { EstoqueMovimentoPayload, Produto } from '../../core/models/user.model';
+import { MovimentacaoEstoque } from '../../core/models/user.model';
 
 // Imports de PrimeNG
 import { TableModule } from 'primeng/table';
@@ -17,6 +18,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { TabViewModule } from 'primeng/tabview'; // <--- Importante para as abas
+import { TagModule } from 'primeng/tag'; 
 
 @Component({
   selector: 'app-estoque',
@@ -34,7 +36,8 @@ import { TabViewModule } from 'primeng/tabview'; // <--- Importante para as abas
     TooltipModule,
     InputGroupModule,
     InputGroupAddonModule,
-    TabViewModule
+    TabViewModule,
+    TagModule
   ],
   templateUrl: './estoque.component.html',
   styleUrl: './estoque.component.scss'
@@ -49,6 +52,12 @@ export class EstoqueComponent implements OnInit {
 
   // --- BUSCA ---
   searchControl = new FormControl('');
+
+// --- HISTÓRICO ---
+  historicoDialogVisivel = false;
+  historicoMovimentacoes: MovimentacaoEstoque[] = [];
+  produtoSelecionadoHistorico: Produto | null = null;
+  carregandoHistorico = false;
 
   // --- CRUD PRODUTO ---
   produtoForm: FormGroup;
@@ -208,6 +217,41 @@ export class EstoqueComponent implements OnInit {
     this.ajusteDialogVisivel = true;
   }
 
+
+// --- NOVO MÉTODO: Abrir Histórico ---
+  abrirHistorico(produto: Produto): void {
+    this.produtoSelecionadoHistorico = produto;
+    this.historicoDialogVisivel = true;
+    this.carregandoHistorico = true;
+    this.historicoMovimentacoes = []; // Limpa anterior
+
+    this.produtoService.buscarHistorico(produto.id).subscribe({
+      next: (data) => {
+        this.historicoMovimentacoes = data;
+        this.carregandoHistorico = false;
+      },
+      error: (err) => {
+        this.carregandoHistorico = false;
+        this.messageService.add({ 
+            severity: 'error', 
+            summary: 'Erro', 
+            detail: 'Não foi possível carregar o histórico.' 
+        });
+      }
+    });
+  }
+
+  // Helper para cor da Badge/Tag
+  getSeverity(tipo: string): 'success' | 'info' | 'warning' | 'danger' | 'secondary' | 'contrast' | undefined {
+    switch (tipo) {
+      case 'ENTRADA': return 'success'; // Verde
+      case 'SAIDA': return 'danger';    // Vermelho
+      case 'AJUSTE': return 'warning';  // Laranja
+      default: return 'info';
+    }
+  }
+
+
   fecharDialogAjuste(): void {
     this.ajusteDialogVisivel = false;
     this.currentProdutoAjuste = null;
@@ -297,4 +341,8 @@ export class EstoqueComponent implements OnInit {
         detail: err.error?.message || 'Erro ao processar movimentação.' 
     });
   }
+
+
+
+  
 }

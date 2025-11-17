@@ -1,25 +1,90 @@
+/* Fundo da Página com Imagem */
 .login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background: linear-gradient(135deg, var(--p-surface-50) 0%, var(--p-surface-200) 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 1rem;
+
+    background-image: url('/images/fundo_supermecado.webp'); /* Caminho para sua imagem */
+    background-size: cover;      /* Garante que a imagem cubra todo o container */
+    background-position: center; /* Centraliza a imagem */
+    background-repeat: no-repeat;/* Evita repetição */
+
+    /* Opcional: Adicionar um overlay escuro para melhorar a legibilidade do formulário */
+    position: relative; // Necessário para posicionar o overlay
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4); /* Overlay preto com 40% de opacidade */
+        z-index: 0; // Garante que o overlay fique abaixo do conteúdo do login
+    }
 }
 
-.login-form {
-  width: 100%;
-  max-width: 400px;
-  padding: 2.5rem;
+/* Container do Conteúdo (Card) */
+.login-content {
+    width: 100%;
+    max-width: 420px;
+    background-color: var(--p-surface-0);
+    padding: 3rem 2.5rem;
+    border-radius: 1.5rem;
+    box-shadow: 
+        0 4px 6px -1px rgba(0, 0, 0, 0.05), 
+        0 10px 15px -3px rgba(0, 0, 0, 0.05),
+        0 0 0 1px rgba(0,0,0,0.02);
+    position: relative; /* Importante para que o card fique acima do overlay */
+    z-index: 1; /* Garante que o card fique acima do overlay */
+}
 
-  /* Usa as variáveis do tema para criar o card flutuante */
-  background: var(--p-surface-0);
-  border-radius: var(--p-border-radius-xl);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-  border: 1px solid var(--p-surface-100);
+/* O restante do CSS do .login-content, .logo-circle e @keyframes continua igual */
+.logo-circle {
+    width: 64px;
+    height: 64px;
+    background-color: var(--p-primary-50);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
 
-  h2 {
-    text-align: center;
-    color: var(--p-primary-color);
-    margin-bottom: 2rem;
-  }
+.fade-in-up {
+    animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsividade */
+@media (max-width: 480px) {
+    .login-content {
+        padding: 2rem 1.5rem;
+        box-shadow: none;
+        background-color: transparent; /* Card transparente no mobile */
+    }
+    
+    .login-container {
+        background-image: none; /* Remove a imagem de fundo no mobile */
+        background-color: var(--p-surface-0); /* Fundo branco no mobile */
+        align-items: flex-start;
+        padding-top: 4rem;
+
+        &::before { /* Remove o overlay no mobile */
+            display: none;
+        }
+    }
+
+    .logo-circle {
+      background-color: var(--p-primary-50); /* Mantém o círculo do logo */
+    }
 }
