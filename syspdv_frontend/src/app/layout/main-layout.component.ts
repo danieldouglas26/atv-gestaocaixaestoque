@@ -29,7 +29,7 @@ export class MainLayoutComponent implements OnInit {
   currentUser = this.authService.currentUser;
 
   // Controle de visibilidade do menu
-  sidebarVisible = true; 
+  sidebarVisible = true;
 
   constructor() {
     effect(() => {
@@ -68,7 +68,7 @@ export class MainLayoutComponent implements OnInit {
     if (url.includes('estoque')) return 'Estoque';
     if (url.includes('caixa')) return 'Caixa (PDV)';
     if (url.includes('relatorios')) return 'Relatórios';
-    return 'SysPDV';
+    return 'NexusPDV';
   }
 
   private buildMenu(user: User): void {
