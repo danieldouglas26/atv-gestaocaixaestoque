@@ -6,7 +6,7 @@ import { VendaService } from '../../core/services/venda.service';
 import { UsuarioService } from '../../core/services/usuario.service';
 import { ApiUser, Venda } from '../../core/models/user.model';
 
-// Imports de PrimeNG
+// Imports UI
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -14,47 +14,52 @@ import { ToastModule } from 'primeng/toast';
 import { CalendarModule } from 'primeng/calendar';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { PanelModule } from 'primeng/panel'; // <--- NOVO IMPORT
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-relatorios',
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule, // Precisamos de FormsModule para os filtros (ngModel)
+    FormsModule,
     TableModule,
     ButtonModule,
     DialogModule,
     ToastModule,
     CalendarModule,
     DropdownModule,
-    InputNumberModule
+    InputNumberModule,
+    PanelModule, // <--- ADICIONE AQUI
+    TooltipModule
   ],
   templateUrl: './relatorios.component.html',
   styleUrl: './relatorios.component.scss'
 })
 export class RelatoriosComponent implements OnInit {
+  // ... (Mantenha todo o código da classe exatamente como estava antes)
+  // A lógica não muda, apenas o visual.
+
   private vendaService = inject(VendaService);
   private usuarioService = inject(UsuarioService);
   private messageService = inject(MessageService);
 
   vendas: Venda[] = [];
-  usuarios: ApiUser[] = []; // Para o filtro de usuário
+  usuarios: ApiUser[] = [];
 
-  // --- Filtros (conforme PDF) ---
   filtroDataInicio: Date | null = null;
   filtroDataFim: Date | null = null;
   filtroUsuarioId: number | null = null;
   filtroValorMin: number | null = null;
   filtroValorMax: number | null = null;
 
-  // --- Totais (conforme PDF) ---
   totalVendasValor: number = 0;
   totalVendasCount: number = 0;
   totalItensVendidos: number = 0;
 
-  // --- Dialog de Detalhes ---
   dialogVisivel = false;
   vendaSelecionada: Venda | null = null;
+window: any;
 
   ngOnInit(): void {
     this.carregarVendas();
@@ -68,19 +73,13 @@ export class RelatoriosComponent implements OnInit {
   }
 
   carregarVendas(): void {
-    // Constrói o objeto de filtros
     const filtros: any = {};
     if (this.filtroDataInicio) filtros.dataInicio = this.filtroDataInicio.toISOString();
     if (this.filtroDataFim) filtros.dataFim = this.filtroDataFim.toISOString();
     if (this.filtroUsuarioId) filtros.usuarioId = this.filtroUsuarioId;
 
-    // NOTA: A API que você forneceu não tem filtros de valor.
-    // Vamos filtrar localmente por valor após o retorno.
-
-    // GET /api/vendas (com params)
     this.vendaService.listarVendas(filtros).subscribe({
       next: (data) => {
-        // Filtro local por valor (já que a API não suporta)
         let dadosFiltrados = data;
         if (this.filtroValorMin) {
           dadosFiltrados = dadosFiltrados.filter(v => v.valorTotal >= this.filtroValorMin!);
@@ -115,8 +114,6 @@ export class RelatoriosComponent implements OnInit {
   }
 
   verDetalhes(venda: Venda): void {
-    // Opcional: Chamar GET /api/vendas/{id} se a lista não trouxesse os itens
-    // Mas a sua API GET /api/vendas já traz os itens, então podemos usar direto
     this.vendaSelecionada = venda;
     this.dialogVisivel = true;
   }

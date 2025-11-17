@@ -1,28 +1,30 @@
+// app.config.ts
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { provideHttpClient } from '@angular/common/http';
-import { MessageService } from 'primeng/api';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
-import Aura from '@primeuix/themes/aura';
+import Lara from '@primeuix/themes/lara';
+import { MessageService } from 'primeng/api';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideHttpClient(),
-    MessageService,
-
-
     provideAnimationsAsync(),
-
-
+    MessageService,
     providePrimeNG({
+      ripple: true, // <--- Ativa animação de clique
       theme: {
-        preset: Aura,
+        preset: Lara,
         options: {
-          dark: true
+          darkModeSelector: '.dark-mode', // Permite alternar modo escuro manualmente se quiser
+          cssLayer: {
+            name: 'primeng',
+            order: 'app-styles, primeng'
+          }
         }
       }
     })

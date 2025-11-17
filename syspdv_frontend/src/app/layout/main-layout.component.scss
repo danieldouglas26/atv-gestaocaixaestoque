@@ -1,110 +1,67 @@
-// Largura da nossa sidebar
-$sidebar-width: 280px;
-
-/* Removemos o ':host' e os estilos '::ng-deep .p-sidebar'
-  e adicionamos os estilos para .layout-sidebar
-*/
+.layout-wrapper {
+    display: flex;
+    min-height: 100vh;
+    background-color: var(--p-surface-50); /* Fundo geral */
+}
 
 .layout-sidebar {
-  position: fixed; // Fixa na tela
-  left: 0;
-  top: 0;
-  height: 100vh; // Altura total
-  width: $sidebar-width; // Largura definida
-  padding: 1rem;
-  box-sizing: border-box; // Garante que o padding não aumente a largura
+    width: 260px;
+    background-color: var(--p-surface-0);
+    border-right: 1px solid var(--p-surface-200);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    height: 100vh;
+    z-index: 999;
+    transition: all 0.3s;
 
-  /* Cores e bordas do tema */
-  background-color: var(--surface-section);
-  border-right: 1px solid var(--surface-border);
+    .sidebar-header {
+        height: 70px;
+        display: flex;
+        align-items: center;
+        padding: 0 1.5rem;
+        border-bottom: 1px solid var(--p-surface-100);
 
-  /* Animação de entrada e saída */
-  transition: transform 0.3s ease;
-  transform: translateX(0);
-
-  /* Estilos do menu (copiados do seu original, agora dentro da sidebar) */
-  .menu-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    padding: 0.5rem 0.5rem 1.5rem 0.5rem;
-    color: var(--primary-color);
-  }
-
-  .p-menu {
-    width: 100%;
-    border: none;
-    background-color: transparent;
-  }
-
-  .p-menuitem-link {
-    .p-menuitem-text, .p-menuitem-icon {
-      color: var(--text-color-secondary);
+        i { color: var(--p-primary-color); }
+        span { color: var(--p-surface-900); }
     }
-    &:hover {
-      background-color: var(--surface-hover);
+
+    .sidebar-content {
+        flex: 1;
+        padding: 1rem;
+        overflow-y: auto;
     }
-  }
-
-  .p-menuitem.p-menuitem-active > .p-menuitem-content {
-    background-color: var(--primary-color-reverse);
-    .p-menuitem-text, .p-menuitem-icon {
-      color: var(--primary-color);
-      font-weight: 600;
-    }
-  }
 }
 
-/* Estado "escondido" da sidebar */
-.layout-sidebar.sidebar-hidden {
-  transform: translateX(-100%); // Move para fora da tela
+.layout-main {
+    flex: 1;
+    margin-left: 260px; /* Espaço da sidebar */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
-/* Estilos do conteúdo principal
-  O layout flex e as cores do topo/página já estavam corretos.
-  A grande mudança é a MARGEM inicial e a transição.
-*/
-.main-content {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  width: calc(100% - #{$sidebar-width}); // Largura total menos a sidebar
-  margin-left: $sidebar-width; // "Empurrado" pela sidebar
-
-  /* Animação para acompanhar a sidebar */
-  transition: all 0.3s ease;
+.layout-topbar {
+    height: 70px;
+    background-color: rgba(255, 255, 255, 0.8); /* Glassmorphism leve */
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--p-surface-200);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 998;
 }
 
-/* Estado "escondido" do conteúdo (sidebar fechada) */
-.main-content.sidebar-hidden {
-  width: 100%; // Ocupa 100%
-  margin-left: 0; // Remove a margem
+.layout-content {
+    padding: 2rem;
+    flex: 1;
 }
 
-/* Os estilos do .top-bar e .page-content
-  continuam os mesmos, pois já estão corretos.
-*/
-.top-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem 1rem;
-  background: var(--surface-card);
-  border-bottom: 1px solid var(--surface-border);
-  height: 60px;
-  flex-shrink: 0;
-}
-
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  font-weight: 500;
-  color: var(--text-color);
-}
-
-.page-content {
-  flex: 1;
-  padding: 1.5rem;
-  background-color: var(--surface-ground);
-  overflow-y: auto;
+/* Responsividade simples */
+@media (max-width: 768px) {
+    .layout-sidebar { transform: translateX(-100%); }
+    .layout-main { margin-left: 0; }
 }

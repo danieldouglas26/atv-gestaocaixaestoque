@@ -1,24 +1,36 @@
-<div class="layout-sidebar" [class.sidebar-hidden]="!sidebarVisible">
-  <h3 class="menu-title">Gestão de Estoque</h3>
-  <p-menu [model]="menuItems"></p-menu>
-</div>
-
-<div class="main-content" [class.sidebar-hidden]="!sidebarVisible">
-  <header class="top-bar">
-    <p-button icon="pi pi-bars" (click)="sidebarVisible = !sidebarVisible" styleClass="p-button-text"></p-button>
-
-    <div class="user-info">
-      <span>{{ currentUser?.email }}</span>
-      <p-button
-        label="Sair"
-        icon="pi pi-sign-out"
-        (click)="onLogout()"
-        styleClass="p-button-text p-button-danger">
-      </p-button>
+<div class="layout-wrapper">
+  <aside class="layout-sidebar">
+    <div class="sidebar-header">
+      <i class="pi pi-box text-4xl text-primary"></i>
+      <span class="font-bold text-2xl ml-2">SysPDV</span>
     </div>
-  </header>
 
-  <main class="page-content">
-    <router-outlet></router-outlet>
-  </main>
+    <div class="sidebar-content">
+      <p-menu [model]="menuItems" styleClass="w-full border-none bg-transparent"></p-menu>
+    </div>
+  </aside>
+
+  <div class="layout-main">
+    <header class="layout-topbar">
+      <div class="flex align-items-center">
+        <h3 class="m-0 text-lg font-medium text-600">{{ getPageTitle() }}</h3>
+      </div>
+
+     <div class="flex align-items-center gap-3">
+        <span class="text-sm text-600">Olá, <strong>{{ currentUser()?.nome }}</strong></span>
+        <p-button
+            icon="pi pi-power-off"
+            [rounded]="true"
+            [text]="true"
+            severity="danger"
+            pTooltip="Sair"
+            (onClick)="onLogout()">
+        </p-button>
+      </div>
+    </header>
+
+    <main class="layout-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
 </div>

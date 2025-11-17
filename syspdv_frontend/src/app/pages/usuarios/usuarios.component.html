@@ -62,37 +62,22 @@
       <div class="field col-12">
         <label for="nomeCompleto">Nome Completo</label>
         <input pInputText id="nomeCompleto" formControlName="nomeCompleto" />
-        <small class="p-error" *ngIf="f['nomeCompleto'].invalid && f['nomeCompleto'].touched">
-          Nome é obrigatório.
-        </small>
-      </div>
-
+        </div>
       <div class="field col-12">
         <label for="email">E-mail</label>
         <input pInputText id="email" formControlName="email" />
-        <small class="p-error" *ngIf="f['email'].invalid && f['email'].touched">
-          <span *ngIf="f['email'].errors?.['required']">E-mail é obrigatório.</span>
-          <span *ngIf="f['email'].errors?.['email']">Formato de e-mail inválido.</span>
-        </small>
-      </div>
-
+        </div>
       <div class="field col-12">
         <label for="senha">Senha</label>
         <p-password id="senha" formControlName="senha" [toggleMask]="true" [feedback]="false"></p-password>
-        <small *ngIf="isEditMode" class="p-info">Deixe em branco para não alterar</small>
-        <small class="p-error" *ngIf="f['senha'].invalid && f['senha'].touched">
-          <span *ngIf="f['senha'].errors?.['required']">Senha é obrigatória.</span>
-          <span *ngIf="f['senha'].errors?.['minlength']">Mínimo 8 caracteres.</span>
-          <span *ngIf="f['senha'].errors?.['pattern']">Deve conter 1 letra maiúscula e 1 número.</span>
-        </small>
-      </div>
+        </div>
 
-      <div class="field col-6">
+      <div class="field col-12">
         <label for="perfil">Perfil</label>
         <p-dropdown id="perfil" [options]="perfis" formControlName="perfil" optionLabel="label" optionValue="value"></p-dropdown>
       </div>
 
-      <div class="field col-6">
+      <div class="field col-12">
         <label for="status">Status</label>
         <p-dropdown id="status" [options]="status" formControlName="status" optionLabel="label" optionValue="value"></p-dropdown>
       </div>

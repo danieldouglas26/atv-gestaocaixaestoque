@@ -1,123 +1,184 @@
 <p-toast></p-toast>
-<div class="card">
-  <h2>Relatório de Vendas</h2>
 
-  <div class="p-fluid grid formgrid mb-4 p-3 surface-100 border-round">
-    <div class="field col-12 md:col-3">
-      <label for="dataInicio">Data Início</label>
-      <p-calendar id="dataInicio" [(ngModel)]="filtroDataInicio" [showTime]="true" dateFormat="dd/mm/yy"></p-calendar>
+<div class="relatorios-container fade-in">
+
+  <div class="flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="m-0 text-900 font-bold">Relatórios de Vendas</h2>
+      <span class="text-500">Analise o desempenho do seu negócio</span>
     </div>
-    <div class="field col-12 md:col-3">
-      <label for="dataFim">Data Fim</label>
-      <p-calendar id="dataFim" [(ngModel)]="filtroDataFim" [showTime]="true" dateFormat="dd/mm/yy"></p-calendar>
-    </div>
-    <div class="field col-12 md:col-3">
-      <label for="usuario">Usuário (Operador)</label>
-      <p-dropdown id="usuario" [options]="usuarios" [(ngModel)]="filtroUsuarioId"
-                  optionLabel="nomeCompleto" optionValue="id"
-                  [showClear]="true" placeholder="Todos"></p-dropdown>
-    </div>
-    <div class="field col-6 md:col-1">
-      <label for="valorMin">Valor Min (R$)</label>
-      <p-inputNumber id="valorMin" [(ngModel)]="filtroValorMin" mode="currency" currency="BRL" locale="pt-BR"></p-inputNumber>
-    </div>
-    <div class="field col-6 md:col-1">
-      <label for="valorMax">Valor Max (R$)</label>
-      <p-inputNumber id="valorMax" [(ngModel)]="filtroValorMax" mode="currency" currency="BRL" locale="pt-BR"></p-inputNumber>
-    </div>
-    <div class="field col-12 md:col-1 flex align-items-end">
-      <p-button icon="pi pi-filter" (onClick)="carregarVendas()"></p-button>
-    </div>
-    <div class="field col-12 md:col-1 flex align-items-end">
-      <p-button icon="pi pi-filter-slash" styleClass="p-button-outlined" (onClick)="limparFiltros()"></p-button>
-    </div>
+    <p-button icon="pi pi-print" label="Imprimir" styleClass="p-button-outlined" (onClick)="window.print()"></p-button>
   </div>
 
   <div class="grid mb-4">
-    <div class="col-4">
-      <div class="p-3 border-round surface-card text-center">
-        <div class="text-xl text-color-secondary">Total de Vendas (R$)</div>
-        <div class="text-3xl font-bold text-primary">{{ totalVendasValor | currency:'BRL' }}</div>
+    <div class="col-12 md:col-4">
+      <div class="kpi-card bg-blue-50 border-blue-200">
+        <div class="kpi-content">
+          <span class="kpi-title text-blue-600">Faturamento Total</span>
+          <span class="kpi-value text-blue-900">{{ totalVendasValor | currency:'BRL' }}</span>
+        </div>
+        <div class="kpi-icon bg-blue-100 text-blue-600">
+          <i class="pi pi-dollar"></i>
+        </div>
       </div>
     </div>
-    <div class="col-4">
-      <div class="p-3 border-round surface-card text-center">
-        <div class="text-xl text-color-secondary">Nº de Vendas</div>
-        <div class="text-3xl font-bold">{{ totalVendasCount }}</div>
+
+    <div class="col-12 md:col-4">
+      <div class="kpi-card bg-purple-50 border-purple-200">
+        <div class="kpi-content">
+          <span class="kpi-title text-purple-600">Vendas Realizadas</span>
+          <span class="kpi-value text-purple-900">{{ totalVendasCount }}</span>
+        </div>
+        <div class="kpi-icon bg-purple-100 text-purple-600">
+          <i class="pi pi-shopping-bag"></i>
+        </div>
       </div>
     </div>
-    <div class="col-4">
-      <div class="p-3 border-round surface-card text-center">
-        <div class="text-xl text-color-secondary">Itens Vendidos</div>
-        <div class="text-3xl font-bold">{{ totalItensVendidos | number:'1.0-0' }}</div>
+
+    <div class="col-12 md:col-4">
+      <div class="kpi-card bg-teal-50 border-teal-200">
+        <div class="kpi-content">
+          <span class="kpi-title text-teal-600">Produtos Saídos</span>
+          <span class="kpi-value text-teal-900">{{ totalItensVendidos | number:'1.0-0' }}</span>
+        </div>
+        <div class="kpi-icon bg-teal-100 text-teal-600">
+          <i class="pi pi-box"></i>
+        </div>
       </div>
     </div>
   </div>
 
-  <p-table [value]="vendas" [tableStyle]="{'min-width': '50rem'}">
-    <ng-template pTemplate="header">
-      <tr>
-        <th>ID Venda</th>
-        <th>Data/Hora</th>
-        <th>Operador</th>
-        <th>Valor Total</th>
-        <th>Recebido</th>
-        <th>Troco</th>
-        <th style="width: 8rem">Ações</th>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-venda>
-      <tr>
-        <td>{{ venda.id }}</td>
-        <td>{{ venda.dataHora | date:'dd/MM/yy HH:mm' }}</td>
-        <td>{{ venda.usuario.nomeCompleto }}</td>
-        <td><strong>{{ venda.valorTotal | currency:'BRL' }}</strong></td>
-        <td>{{ venda.valorRecebido | currency:'BRL' }}</td>
-        <td>{{ venda.troco | currency:'BRL' }}</td>
-        <td>
-          <p-button icon="pi pi-search" styleClass="p-button-rounded p-button-info" pTooltip="Ver Itens" (onClick)="verDetalhes(venda)"></p-button>
-        </td>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="emptymessage">
-      <tr>
-        <td colspan="7" class="text-center">Nenhuma venda encontrada para os filtros aplicados.</td>
-      </tr>
-    </ng-template>
-  </p-table>
-</div>
+  <p-panel header="Filtros Avançados" [toggleable]="true" styleClass="mb-4 shadow-1">
+    <div class="grid p-fluid formgrid">
+      <div class="col-12 md:col-3 field">
+        <label for="dataInicio">Data Início</label>
+        <p-calendar id="dataInicio" [(ngModel)]="filtroDataInicio" [showTime]="true" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa --:--" showIcon="true"></p-calendar>
+      </div>
 
-<p-dialog [(visible)]="dialogVisivel" header="Detalhes da Venda (ID: {{vendaSelecionada?.id}})" [modal]="true" [style]="{width: '600px'}">
-  <div *ngIf="vendaSelecionada" class="recibo">
-    <p>Data: {{ vendaSelecionada.dataHora | date:'dd/MM/yyyy HH:mm:ss' }}</p>
-    <p>Operador: {{ vendaSelecionada.usuario.nomeCompleto }}</p>
+      <div class="col-12 md:col-3 field">
+        <label for="dataFim">Data Fim</label>
+        <p-calendar id="dataFim" [(ngModel)]="filtroDataFim" [showTime]="true" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa --:--" showIcon="true"></p-calendar>
+      </div>
 
-    <h4 class="mt-4">Itens Vendidos</h4>
-    <p-table [value]="vendaSelecionada.itens">
+      <div class="col-12 md:col-3 field">
+        <label for="usuario">Operador</label>
+        <p-dropdown id="usuario" [options]="usuarios" [(ngModel)]="filtroUsuarioId"
+                    optionLabel="nomeCompleto" optionValue="id"
+                    [showClear]="true" placeholder="Selecione um operador"></p-dropdown>
+      </div>
+
+      <div class="col-12 md:col-3 field">
+        <label>Faixa de Valor (R$)</label>
+        <div class="flex gap-2">
+          <p-inputNumber [(ngModel)]="filtroValorMin" mode="currency" currency="BRL" locale="pt-BR" placeholder="Min"></p-inputNumber>
+          <p-inputNumber [(ngModel)]="filtroValorMax" mode="currency" currency="BRL" locale="pt-BR" placeholder="Max"></p-inputNumber>
+        </div>
+      </div>
+
+      <div class="col-12 flex justify-content-end gap-2 mt-2">
+         <p-button label="Limpar" icon="pi pi-filter-slash" styleClass="p-button-outlined p-button-secondary" (onClick)="limparFiltros()"></p-button>
+         <p-button label="Filtrar Resultados" icon="pi pi-search" (onClick)="carregarVendas()"></p-button>
+      </div>
+    </div>
+  </p-panel>
+
+  <div class="card p-0 border-none shadow-1 overflow-hidden">
+    <p-table [value]="vendas" [rows]="10" [paginator]="true" styleClass="p-datatable-striped" [tableStyle]="{'min-width': '60rem'}">
       <ng-template pTemplate="header">
         <tr>
-          <th>Produto</th>
-          <th>Cód.</th>
-          <th>Qtd.</th>
-          <th>Preço Unit.</th>
-          <th>Subtotal</th>
+          <th class="bg-surface-50">#ID</th>
+          <th class="bg-surface-50">Data/Hora</th>
+          <th class="bg-surface-50">Operador</th>
+          <th class="bg-surface-50">Valor Total</th>
+          <th class="bg-surface-50">Forma Pagto.</th>
+          <th class="bg-surface-50 text-center">Ações</th>
         </tr>
       </ng-template>
-      <ng-template pTemplate="body" let-item>
+      <ng-template pTemplate="body" let-venda>
         <tr>
-          <td>{{ item.produto.nome }}</td>
-          <td>{{ item.produto.codigo }}</td>
-          <td>{{ item.quantidade }}</td>
-          <td>{{ item.precoUnitario | currency:'BRL' }}</td>
-          <td><strong>{{ item.subtotal | currency:'BRL' }}</strong></td>
+          <td class="font-bold text-500">#{{ venda.id }}</td>
+          <td>
+             <div class="flex flex-column">
+                <span class="font-medium">{{ venda.dataHora | date:'dd/MM/yyyy' }}</span>
+                <span class="text-sm text-500">{{ venda.dataHora | date:'HH:mm' }}</span>
+             </div>
+          </td>
+          <td>
+            <div class="flex align-items-center gap-2">
+               <i class="pi pi-user text-primary"></i>
+               <span>{{ venda.usuario.nomeCompleto }}</span>
+            </div>
+          </td>
+          <td><span class="text-green-600 font-bold bg-green-50 px-2 py-1 border-round">{{ venda.valorTotal | currency:'BRL' }}</span></td>
+          <td>Dinheiro</td> <td class="text-center">
+            <p-button icon="pi pi-eye" [rounded]="true" [text]="true" severity="info" pTooltip="Ver Detalhes" tooltipPosition="left" (onClick)="verDetalhes(venda)"></p-button>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="6" class="text-center p-6">
+             <div class="flex flex-column align-items-center">
+                <i class="pi pi-search text-4xl text-400 mb-3"></i>
+                <span class="text-xl font-medium text-600">Nenhuma venda encontrada</span>
+                <span class="text-500">Tente ajustar os filtros acima.</span>
+             </div>
+          </td>
         </tr>
       </ng-template>
     </p-table>
+  </div>
+</div>
 
-    <div class="recibo-totais mt-4">
-      <div><span>Total:</span> <strong>{{ vendaSelecionada.valorTotal | currency:'BRL' }}</strong></div>
-      <div><span>Recebido:</span> <strong>{{ vendaSelecionada.valorRecebido | currency:'BRL' }}</strong></div>
-      <div><span>Troco:</span> <strong>{{ vendaSelecionada.troco | currency:'BRL' }}</strong></div>
+<p-dialog [(visible)]="dialogVisivel" header="Detalhes da Venda" [modal]="true" [style]="{width: '600px'}" [draggable]="false" [resizable]="false">
+  <div *ngIf="vendaSelecionada" class="flex flex-column gap-4">
+
+    <div class="flex justify-content-between p-3 surface-50 border-round">
+       <div class="flex flex-column">
+          <span class="text-sm text-500">ID da Venda</span>
+          <span class="font-bold text-xl">#{{ vendaSelecionada.id }}</span>
+       </div>
+       <div class="flex flex-column text-right">
+          <span class="text-sm text-500">Data</span>
+          <span class="font-medium">{{ vendaSelecionada.dataHora | date:'dd/MM/yy HH:mm' }}</span>
+       </div>
+    </div>
+
+    <div>
+        <h4 class="mb-3 text-700">Itens</h4>
+        <p-table [value]="vendaSelecionada.itens" styleClass="p-datatable-sm p-datatable-gridlines">
+        <ng-template pTemplate="header">
+            <tr>
+            <th>Produto</th>
+            <th class="text-right">Qtd.</th>
+            <th class="text-right">Unit.</th>
+            <th class="text-right">Total</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-item>
+            <tr>
+            <td>{{ item.produto.nome }}</td>
+            <td class="text-right">{{ item.quantidade }}</td>
+            <td class="text-right">{{ item.precoUnitario | currency:'BRL' }}</td>
+            <td class="text-right font-medium">{{ item.subtotal | currency:'BRL' }}</td>
+            </tr>
+        </ng-template>
+        </p-table>
+    </div>
+
+    <div class="flex flex-column gap-2 p-3 surface-100 border-round">
+      <div class="flex justify-content-between text-lg">
+         <span>Total Venda:</span>
+         <strong class="text-900">{{ vendaSelecionada.valorTotal | currency:'BRL' }}</strong>
+      </div>
+      <div class="flex justify-content-between text-500">
+         <span>Recebido:</span>
+         <span>{{ vendaSelecionada.valorRecebido | currency:'BRL' }}</span>
+      </div>
+      <div class="flex justify-content-between text-green-600 font-medium">
+         <span>Troco:</span>
+         <span>{{ vendaSelecionada.troco | currency:'BRL' }}</span>
+      </div>
     </div>
   </div>
 </p-dialog>

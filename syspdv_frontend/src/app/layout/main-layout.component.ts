@@ -1,13 +1,12 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, effect } from '@angular/core'; // Importe 'effect'
 import { Router, RouterOutlet } from '@angular/router';
 import { AuthService } from '../core/services/auth.service';
-import { User, UserRole } from '../core/models/user.model';
+import { User } from '../core/models/user.model';
 import { MenuItem } from 'primeng/api';
-
-// import { SidebarModule } from 'primeng/sidebar'; // <-- REMOVA ESTA LINHA
 import { ButtonModule } from 'primeng/button';
 import { MenuModule } from 'primeng/menu';
 import { CommonModule } from '@angular/common';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-main-layout',
@@ -15,9 +14,9 @@ import { CommonModule } from '@angular/common';
   imports: [
     CommonModule,
     RouterOutlet,
-    // SidebarModule, // <-- REMOVA ESTA LINHA
     ButtonModule,
-    MenuModule
+    MenuModule,
+    TooltipModule
   ],
   templateUrl: './main-layout.component.html',
   styleUrl: './main-layout.component.scss'
@@ -26,34 +25,40 @@ export class MainLayoutComponent implements OnInit {
   authService = inject(AuthService);
   router = inject(Router);
 
-  sidebarVisible = true;
   menuItems: MenuItem[] = [];
-  currentUser: User | null = this.authService.currentUser();
 
-  ngOnInit(): void {
-    this.buildMenu();
-    this.handleInitialRedirect();
+  // Cria um "computed" simples apenas acessando o signal para uso no template
+  currentUser = this.authService.currentUser;
+
+  constructor() {
+    // O 'effect' monitora mudanças no usuário automaticamente
+    effect(() => {
+      const user = this.authService.currentUser();
+      console.log('Layout: Usuário detectado:', user); // <--- Veja isso no Console (F12)
+
+      if (user) {
+        this.buildMenu(user);
+      } else {
+        this.menuItems = [];
+      }
+    });
   }
 
-
-  private handleInitialRedirect(): void {
-    // Esta lógica já está correta
+  ngOnInit(): void {
+    // Redirecionamento inicial se necessário
     if (this.router.url === '/app' || this.router.url === '/app/') {
-      const role = this.currentUser?.perfil;
-      if (role === 'ADMIN') {
+      const user = this.authService.currentUser();
+      if (user?.perfil === 'ADMIN') {
         this.router.navigate(['/app/dashboard']);
-      } else if (role === 'OPERADOR') {
+      } else if (user?.perfil === 'OPERADOR') {
         this.router.navigate(['/app/welcome']);
       }
     }
   }
 
-
-  private buildMenu(): void {
-    // Esta lógica já está correta
-    const role = this.currentUser?.perfil;
+  private buildMenu(user: User): void {
+    const role = user.perfil;
     let items: MenuItem[] = [];
-
 
     if (role === 'ADMIN') {
       items = [
@@ -62,14 +67,14 @@ export class MainLayoutComponent implements OnInit {
         { label: 'Gestão de Estoque', icon: 'pi pi-fw pi-box', routerLink: '/app/estoque' },
         { label: 'Relatórios', icon: 'pi pi-fw pi-chart-bar', routerLink: '/app/relatorios' }
       ];
-    }
-
-    else if (role === 'OPERADOR') {
+    } else if (role === 'OPERADOR') {
       items = [
         { label: 'Bem-vindo', icon: 'pi pi-fw pi-home', routerLink: '/app/welcome' },
         { label: 'Caixa / Vendas', icon: 'pi pi-fw pi-shopping-cart', routerLink: '/app/caixa' },
         { label: 'Relatórios', icon: 'pi pi-fw pi-chart-bar', routerLink: '/app/relatorios' }
       ];
+    } else {
+      console.warn('Layout: Perfil desconhecido:', role); // <--- Aviso se o perfil estiver errado
     }
 
     this.menuItems = items;
@@ -77,5 +82,17 @@ export class MainLayoutComponent implements OnInit {
 
   onLogout(): void {
     this.authService.logout();
+  }
+
+  // Método auxiliar para o título (que estava faltando e gerando erro)
+  getPageTitle(): string {
+    // Lógica simples para pegar o título baseado na rota
+    const url = this.router.url;
+    if (url.includes('dashboard')) return 'Dashboard';
+    if (url.includes('usuarios')) return 'Usuários';
+    if (url.includes('estoque')) return 'Estoque';
+    if (url.includes('caixa')) return 'Caixa (PDV)';
+    if (url.includes('relatorios')) return 'Relatórios';
+    return 'SysPDV';
   }
 }

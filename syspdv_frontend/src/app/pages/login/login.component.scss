@@ -1,54 +1,25 @@
-/* Usando variáveis de tema do PrimeNG */
 .login-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  /* var(--surface-ground) é a cor de fundo da página (clara ou escura) */
-  background-color: var(--surface-ground);
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--p-surface-50) 0%, var(--p-surface-200) 100%);
 }
 
 .login-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  padding: 2.5rem 2rem;
-  /* var(--surface-card) é a cor do "cartão" (branca ou cinza escuro) */
-  background: var(--surface-card);
-  /* var(--surface-border) é a cor da borda */
-  border: 1px solid var(--surface-border);
-  border-radius: 8px;
-  /* Sombra sutil */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   width: 100%;
   max-width: 400px;
-}
+  padding: 2.5rem;
 
-/* Estiliza o H2 de forma consistente com o tema */
-.login-form h2 {
-  color: var(--text-color);
-  font-weight: 600;
-  text-align: center;
-  margin: 0 0 0.5rem 0;
-}
+  /* Usa as variáveis do tema para criar o card flutuante */
+  background: var(--p-surface-0);
+  border-radius: var(--p-border-radius-xl);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  border: 1px solid var(--p-surface-100);
 
-.p-field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-/* Garante que os inputs de senha ocupem 100% */
-.p-field p-password {
-  width: 100%;
-  display: block;
-}
-
-.p-field input,
-::ng-deep .p-field .p-password-input {
-  width: 100%;
-}
-
-p-button {
-  width: 100%;
+  h2 {
+    text-align: center;
+    color: var(--p-primary-color);
+    margin-bottom: 2rem;
+  }
 }

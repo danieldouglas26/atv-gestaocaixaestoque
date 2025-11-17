@@ -63,12 +63,11 @@
     </ng-template>
   </p-table>
 </div>
-
 <p-dialog [(visible)]="dialogVisivel" [header]="isEditMode ? 'Editar Produto' : 'Novo Produto'" [modal]="true" [style]="{width: '600px'}" (onHide)="fecharDialog()">
   <form [formGroup]="produtoForm" (ngSubmit)="salvarProduto()">
     <div class="p-fluid p-formgrid grid">
 
-      <div class="field col-6">
+      <div class="field col-12">
         <label for="codigo">Código</label>
         <input pInputText id="codigo" formControlName="codigo" />
         <small class="p-error" *ngIf="f['codigo'].invalid && f['codigo'].touched">
@@ -76,7 +75,7 @@
         </small>
       </div>
 
-      <div class="field col-6">
+      <div class="field col-12">
         <label for="nome">Nome</label>
         <input pInputText id="nome" formControlName="nome" />
          <small class="p-error" *ngIf="f['nome'].invalid && f['nome'].touched">
@@ -92,7 +91,7 @@
         </small>
       </div>
 
-      <div class="field col-6">
+      <div class="field col-12">
         <label for="precoUnitario">Preço Unitário</label>
         <p-inputNumber id="precoUnitario" formControlName="precoUnitario" mode="currency" currency="BRL" locale="pt-BR"></p-inputNumber>
          <small class="p-error" *ngIf="f['precoUnitario'].invalid && f['precoUnitario'].touched">
@@ -100,7 +99,7 @@
         </small>
       </div>
 
-      <div class="field col-6">
+      <div class="field col-12">
         <label for="quantidadeEstoque">Qtd. Estoque</label>
         <p-inputNumber id="quantidadeEstoque" formControlName="quantidadeEstoque" [min]="0"></p-inputNumber>
          <small class="p-error" *ngIf="f['quantidadeEstoque'].invalid && f['quantidadeEstoque'].touched">
@@ -113,37 +112,6 @@
     <div class="p-dialog-footer">
       <p-button label="Cancelar" icon="pi pi-times" styleClass="p-button-text" (onClick)="fecharDialog()"></p-button>
       <p-button label="Salvar" icon="pi pi-check" type="submit"></p-button>
-    </div>
-  </form>
-</p-dialog>
-
-
-<p-dialog [(visible)]="ajusteDialogVisivel" header="Ajustar Estoque: {{currentProdutoAjuste?.nome}}" [modal]="true" [style]="{width: '450px'}" (onHide)="fecharDialogAjuste()">
-  <form [formGroup]="ajusteForm" (ngSubmit)="salvarAjuste()">
-    <div class="p-fluid p-formgrid grid">
-
-      <div class="field col-12">
-        <label for="quantidadeAjuste">Quantidade do Ajuste</label>
-        <p-inputNumber id="quantidadeAjuste" formControlName="quantidade" [showButtons]="true" [min]="-9999" [max]="9999"></p-inputNumber>
-        <small>Positivo para entrada (ex: 5), Negativo para saída (ex: -3)</small>
-         <small class="p-error" *ngIf="af['quantidade'].invalid && af['quantidade'].touched">
-          Quantidade é obrigatória e não pode ser 0.
-        </small>
-      </div>
-
-      <div class="field col-12">
-        <label for="motivo">Motivo do Ajuste</label>
-        <textarea pInputTextarea id="motivo" formControlName="motivo" rows="3" placeholder="Ex: Contagem de inventário, Produto vencido..."></textarea>
-         <small class="p-error" *ngIf="af['motivo'].invalid && af['motivo'].touched">
-          Motivo é obrigatório (mínimo 5 caracteres).
-        </small>
-      </div>
-
-    </div>
-
-    <div class="p-dialog-footer">
-      <p-button label="Cancelar" icon="pi pi-times" styleClass="p-button-text" (onClick)="fecharDialogAjuste()"></p-button>
-      <p-button label="Salvar Ajuste" icon="pi pi-check" type="submit"></p-button>
     </div>
   </form>
 </p-dialog>

@@ -1,8 +1,11 @@
-/* Usar ::ng-deep é necessário para customizar sub-componentes do PrimeNG
-   e fazê-los preencher o espaço corretamente (ex: a tabela rolável) */
+/* Layout específico do PDV (Caixa).
+  A classe .recibo-totais foi removida daqui e globalizada
+  em styles.scss.
+*/
+
 :host {
   display: block;
-  /* Garante que o componente se estique para preencher o contêiner pai */
+  /* Garante que o componente se estique para preencher o .page-content */
   width: 100%;
   height: 100%;
 }
@@ -10,45 +13,37 @@
 .pdv-container {
   display: flex;
   width: 100%;
-  /*
-    Calcula a altura total da tela.
-    Ajuste '80px' se você tiver um header/navbar principal.
-    Se não tiver, use '100vh'.
-  */
-  height: calc(100vh - 80px);
-  background-color: var(--surface-100); // Fundo geral
+  height: 100%;
+  background-color: var(--surface-ground);
+  border: 1px solid var(--surface-border);
+  border-radius: 6px;
+  overflow: hidden;
 }
 
 // ===================================
 // PAINEL ESQUERDO (CARRINHO)
 // ===================================
 .pdv-carrinho-panel {
-  flex: 1; // Ocupa todo o espaço restante
+  flex: 1;
   display: flex;
   flex-direction: column;
-  background-color: var(--surface-0);
-  border-right: 1px solid var(--surface-200);
+  background-color: var(--surface-card); // Fundo do card
+  border-right: 1px solid var(--surface-border);
 }
 
 .carrinho-lista-container {
-  flex: 1; // Faz este container crescer e preencher o espaço
-  overflow: hidden; // Esconde o overflow, pois a p-table cuidará disso
+  flex: 1;
+  overflow: hidden;
 
-  // Faz a p-table se comportar como um flex-item e preencher o espaço
-  ::ng-deep .p-table {
+  // Layout de tabela flexível específico do caixa.
+  :host ::ng-deep .p-table {
     height: 100%;
     display: flex;
     flex-direction: column;
 
     .p-datatable-wrapper {
-      flex: 1; // O wrapper do body da tabela é quem deve crescer
-      overflow: auto; // A rolagem acontece aqui
-    }
-
-    .p-datatable-emptymessage {
-      td {
-        padding: 4rem 0; // Mais espaço quando vazio
-      }
+      flex: 1;
+      overflow: auto;
     }
   }
 }
@@ -59,7 +54,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: var(--surface-500);
+  color: var(--surface-500); // Tom de cinza
+  padding: 4rem 0;
 
   i {
     font-size: 4rem;
@@ -80,20 +76,18 @@
 // PAINEL DIREITO (SIDEBAR DE AÇÕES)
 // ===================================
 .pdv-sidebar-panel {
-  width: 420px; // Largura fixa para as ações
+  width: 420px;
   display: flex;
   flex-direction: column;
   background-color: var(--surface-card);
-  overflow-y: auto; // Permite rolagem se o conteúdo for muito grande
+  overflow-y: auto;
 }
 
-// 1. TOTAL DA VENDA (HERO)
 .pdv-total-display {
   background: var(--primary-color);
   color: var(--primary-color-text);
   padding: 1.5rem 2rem;
   text-align: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
   .total-label {
     display: block;
@@ -104,19 +98,24 @@
   }
   .total-valor {
     display: block;
-    font-size: 3.5rem; // Gigante
+    font-size: 3.5rem;
     font-weight: 700;
     line-height: 1.2;
   }
 }
 
-// 2. e 3. Cards de Ação (Busca e Pagamento)
 .pdv-card-acao {
   padding: 1.5rem 2rem;
-  border-bottom: 1px solid var(--surface-200);
+  border-bottom: 1px solid var(--surface-border);
+
+  /* O layout dos forms já é tratado pelo .field global */
 
   .produto-encontrado {
     margin-bottom: 1rem;
+    background-color: var(--surface-100);
+    padding: 1rem;
+    border-radius: 6px;
+
     .produto-nome {
       font-size: 1.1rem;
       font-weight: 600;
@@ -126,13 +125,13 @@
     .preco-unitario {
       font-size: 1.1rem;
       font-weight: 600;
-      color: var(--primary-500);
+      color: var(--primary-color);
     }
   }
 
-  // Input de Valor Recebido fica vermelho se for menor que o total
-  ::ng-deep .p-inputnumber.ng-invalid.ng-dirty .p-inputtext {
-    border-color: var(--red-500);
+  // Específico do formulário de pagamento
+  :host ::ng-deep .p-inputnumber.ng-invalid.ng-dirty .p-inputtext {
+    border-color: var(--cor-erro);
   }
 }
 
@@ -153,36 +152,18 @@
   .troco-valor {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--green-600);
+    color: var(--cor-sucesso);
   }
 }
 
-// 4. Rodapé Fixo da Sidebar
 .pdv-sidebar-footer {
-  margin-top: auto; // <-- Mágica do Flexbox: empurra para o fundo
+  margin-top: auto;
   padding: 1rem 2rem;
-  background: var(--surface-50);
-  border-top: 1px solid var(--surface-200);
-  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
+  background: var(--surface-50); // Fundo levemente diferente
+  border-top: 1px solid var(--surface-border);
 
   .footer-form {
     display: flex;
     gap: 0.75rem;
-  }
-}
-
-// Estilos do Recibo (copiados do seu código original)
-.recibo-totais {
-  border-top: 1px dashed var(--surface-300);
-  padding-top: 1rem;
-  margin-top: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-
-  div {
-    display: flex;
-    justify-content: space-between;
-    font-size: 1.1rem;
   }
 }

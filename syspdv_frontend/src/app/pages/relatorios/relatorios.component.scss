@@ -1,27 +1,82 @@
-/* Copiando estilos do recibo do caixa para reutilização */
-.recibo {
-  p {
-    margin: 0.5rem 0;
-    color: var(--text-color-secondary);
-  }
-  .recibo-totais {
-    border-top: 1px dashed var(--surface-400);
-    padding-top: 1rem;
-    margin-top: 1rem;
-
-    div {
-      display: flex;
-      justify-content: space-between;
-      font-size: 1.1rem;
-      margin-bottom: 0.5rem;
-
-      strong {
-        font-size: 1.2rem;
-      }
-    }
-  }
+/* Animação de entrada suave */
+.fade-in {
+    animation: fadeIn 0.4s ease-in-out;
 }
 
-.text-center {
-  text-align: center;
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Cards de KPI (Indicadores) */
+.kpi-card {
+    background-color: var(--p-surface-0);
+    border: 1px solid var(--p-surface-200);
+    border-radius: var(--p-border-radius-xl);
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    transition: transform 0.2s, box-shadow 0.2s;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .kpi-content {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .kpi-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .kpi-value {
+        font-size: 2rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .kpi-icon {
+        width: 3.5rem;
+        height: 3.5rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+}
+
+/* Classes utilitárias de cores (simulando o PrimeFlex/Tailwind que não importamos) */
+.bg-blue-50 { background-color: #eff6ff; }
+.bg-blue-100 { background-color: #dbeafe; }
+.text-blue-600 { color: #2563eb; }
+.text-blue-900 { color: #1e3a8a; }
+.border-blue-200 { border-color: #bfdbfe; }
+
+.bg-purple-50 { background-color: #faf5ff; }
+.bg-purple-100 { background-color: #f3e8ff; }
+.text-purple-600 { color: #9333ea; }
+.text-purple-900 { color: #581c87; }
+.border-purple-200 { border-color: #e9d5ff; }
+
+.bg-teal-50 { background-color: #f0fdfa; }
+.bg-teal-100 { background-color: #ccfbf1; }
+.text-teal-600 { color: #0d9488; }
+.text-teal-900 { color: #134e4a; }
+.border-teal-200 { border-color: #99f6e4; }
+
+.bg-surface-50 { background-color: var(--p-surface-50); }
+
+/* Ajuste da tabela para não ter bordas externas */
+::ng-deep .p-datatable .p-datatable-wrapper {
+    border-radius: 0 0 var(--p-border-radius-xl) var(--p-border-radius-xl);
 }
