@@ -1,59 +1,73 @@
-# SyspdvFrontend
+# Frontend - NexusPDV (Web)
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.6.
+Este é o frontend do **NexusPDV**, desenvolvido em **Angular 19** e estilizado com a biblioteca de componentes **PrimeNG**. A aplicação oferece uma interface moderna e responsiva para gestão administrativa e frente de caixa.
 
-## Development server
+## 1. Tecnologias Principais
 
-To start a local development server, run:
+O projeto utiliza as seguintes tecnologias e bibliotecas:
 
-```bash
-ng serve
-```
+* **Angular 19:** Framework principal, utilizando a abordagem de *Standalone Components*.
+* **PrimeNG:** Biblioteca de componentes UI rica (Tabelas, Gráficos, Diálogos, Toasts).
+* **PrimeFlex / CSS Grid:** Para layout responsivo e utilitários de CSS.
+* **Angular HttpClient:** Para comunicação com a API REST.
+* **Reactive Forms:** Para manipulação segura e validada de formulários complexos.
+* **Guards (CanActivate):** Para proteção de rotas baseada em autenticação e perfis de usuário (`RoleGuard`).
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## 2. Fluxo de Autenticação e Segurança
 
-## Code scaffolding
+O sistema implementa controle de acesso via rotas protegidas:
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+1.  **Login:** O usuário insere credenciais na rota `/login`.
+2.  **Sessão:** Se validado, um objeto de usuário e um token são salvos no `localStorage` via `AuthService`.
+3.  **Redirecionamento Inteligente:**
+    * **Admin:** Redirecionado para o Dashboard (`/app/dashboard`).
+    * **Operador:** Redirecionado para a tela de Boas-vindas (`/app/welcome`).
+4.  **Guards:**
+    * `authGuard`: Impede acesso a qualquer rota interna `/app/*` se não houver sessão.
+    * `roleGuard`: Restringe módulos específicos (ex: Operador não acessa "Manter Usuários").
 
-```bash
-ng generate component component-name
-```
+## 3. Portas e Configuração
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+* **Porta do Frontend:** `http://localhost:4200`
+* **API Backend:** Espera-se que o backend esteja rodando em `http://localhost:8080`.
 
-```bash
-ng generate --help
-```
+## 4. Passos para Execução
 
-## Building
+1.  Certifique-se de que o **Backend** esteja em execução.
+2.  Abra um terminal na raiz deste projeto frontend.
+3.  Instale as dependências (caso seja a primeira vez):
+    ```bash
+    npm install
+    ```
+4.  Inicie o servidor de desenvolvimento:
+    ```bash
+    ng serve
+    ```
+5.  Acesse `http://localhost:4200` no navegador.
 
-To build the project run:
+## 5. Funcionalidades por Módulo
 
-```bash
-ng build
-```
+### 🛡️ Módulo Administrativo
+* **Dashboard:** Visão geral com KPIs de faturamento diário, contagem de vendas e alerta de estoque crítico.
+* **Gestão de Estoque:** CRUD de produtos, histórico de movimentações e operações de ajuste (Entrada/Saída/Inventário).
+* **Gestão de Usuários:** Controle de acesso e cadastro de novos operadores/administradores.
+* **Relatórios:** Visualização detalhada de vendas com filtros por data, valor e operador.
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+### 🛒 Módulo Operacional (PDV)
+* **Frente de Caixa:** Interface otimizada para vendas rápidas.
+    * Busca de produtos por código.
+    * Carrinho de compras dinâmico.
+    * Cálculo automático de troco.
+    * Geração de recibo em tela.
+* **Meus Relatórios:** Acesso ao histórico de vendas para conferência.
 
-## Running unit tests
+## 6. Integração com API
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+Este frontend consome os seguintes recursos do backend:
 
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+| Recurso | Rota Base API | Utilização no Frontend |
+| :--- | :--- | :--- |
+| **Auth** | `/api/auth` | Login, Logout e Validação de Sessão. |
+| **Produtos** | `/api/produtos` | Listagens, Busca por código (PDV) e Movimentações de estoque. |
+| **Vendas** | `/api/vendas` | Registro de vendas (Checkout) e Listagem para relatórios. |
+| **Usuários** | `/api/usuarios` | Listagem e gestão de contas de acesso. |
