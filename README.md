@@ -17,5 +17,6 @@ Este repositório é organizado em duas pastas principais:
 
 * **`/syspdv_backend`**: Contém a API REST desenvolvida em Java 21 com Spring Boot 3.
 * **`/syspdv_frotend`**: Contém a aplicação frontend desenvolvida em Angular 19.
+* * **`/docs`**: Contém a documentação do projeto.
 
 Cada pasta contém seu próprio `README.md`.
