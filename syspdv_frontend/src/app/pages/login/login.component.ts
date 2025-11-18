@@ -3,8 +3,6 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { AuthService } from '../../core/services/auth.service';
-
-// UI Modules
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { ButtonModule } from 'primeng/button';
@@ -40,11 +38,11 @@ export class LoginComponent {
 
   onSubmit() {
     if (this.loginForm.invalid) {
-      this.loginForm.markAllAsTouched(); // Mostra os erros visualmente
-      this.messageService.add({ 
-        severity: 'warn', 
-        summary: 'Campos Inválidos', 
-        detail: 'Por favor, verifique seu e-mail e senha.' 
+      this.loginForm.markAllAsTouched();
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Campos Inválidos',
+        detail: 'Por favor, verifique seu e-mail e senha.'
       });
       return;
     }
@@ -58,10 +56,10 @@ export class LoginComponent {
       },
       error: (err: Error) => {
         this.isLoading = false;
-        this.messageService.add({ 
-          severity: 'error', 
-          summary: 'Falha no Login', 
-          detail: err.message || 'Verifique suas credenciais.' 
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Falha no Login',
+          detail: err.message || 'Verifique suas credenciais.'
         });
       }
     });

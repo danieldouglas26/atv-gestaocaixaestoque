@@ -14,7 +14,7 @@
     position: fixed;
     height: 100vh;
     z-index: 999;
-    transition: transform 0.3s; /* Suaviza a entrada/saída */
+    transition: transform 0.3s;
     left: 0;
     top: 0;
 
@@ -38,11 +38,11 @@
 
 .layout-main {
     flex: 1;
-    margin-left: 260px; /* Margem padrão quando o menu está aberto */
+    margin-left: 260px;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    transition: margin-left 0.3s; /* Suaviza o ajuste da margem */
+    transition: margin-left 0.3s;
 }
 
 .layout-topbar {
@@ -64,23 +64,20 @@
     flex: 1;
 }
 
-/* --- ESTADO CONTRAÍDO --- */
 .layout-wrapper.layout-static-inactive {
     .layout-sidebar {
-        transform: translateX(-100%); /* Move o menu para fora da tela */
+        transform: translateX(-100%);
     }
-    
+
     .layout-main {
-        margin-left: 0; /* Remove a margem para ocupar a tela toda */
+        margin-left: 0;
     }
 }
 
-/* Responsividade simples */
+
 @media (max-width: 768px) {
     .layout-sidebar { transform: translateX(-100%); }
     .layout-main { margin-left: 0; }
-    
-    /* Opcional: Se quiser que o botão abra o menu no mobile, 
-       pode adicionar lógica extra aqui ou no TS, mas o padrão 
-       acima já esconde corretamente. */
+
+
 }

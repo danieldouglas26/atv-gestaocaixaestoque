@@ -19,76 +19,75 @@ import com.fatesg.syspdv_backend.repository.ProdutoRepository;
 
 @Service
 public class ProdutoService {
-    
+
     @Autowired
     private ProdutoRepository produtoRepository;
-    
+
     @Autowired
     private MovimentacaoEstoqueService movimentacaoEstoqueService;
-    
+
     public List<ProdutoResponseDTO> listarTodos() {
         return produtoRepository.findAll()
                 .stream()
                 .map(this::toResponseDTO)
                 .collect(Collectors.toList());
     }
-    
+
     public Optional<ProdutoResponseDTO> buscarPorId(Long id) {
         return produtoRepository.findById(id)
                 .map(this::toResponseDTO);
     }
-    
+
     public Optional<ProdutoResponseDTO> buscarPorCodigo(String codigo) {
         return produtoRepository.findByCodigo(codigo)
                 .map(this::toResponseDTO);
     }
-    
+
     public ProdutoResponseDTO criarProduto(ProdutoRequestDTO produtoDTO) {
         if (produtoRepository.existsByCodigo(produtoDTO.getCodigo())) {
             throw new RuntimeException("Já existe um produto com o código: " + produtoDTO.getCodigo());
         }
-        
-        if (produtoDTO.getQuantidadeEstoque().compareTo(BigDecimal.ZERO) < 0 ) {
+
+        if (produtoDTO.getQuantidadeEstoque().compareTo(BigDecimal.ZERO) < 0) {
             throw new RuntimeException("Quantidade em estoque não pode ser negativa");
         }
-        
+
         Produto produto = new Produto();
         produto.setCodigo(produtoDTO.getCodigo());
         produto.setNome(produtoDTO.getNome());
         produto.setCategoria(produtoDTO.getCategoria());
         produto.setQuantidadeEstoque(produtoDTO.getQuantidadeEstoque());
         produto.setPrecoUnitario(produtoDTO.getPrecoUnitario());
-        
+
         Produto produtoSalvo = produtoRepository.save(produto);
-        
-        
+
         movimentacaoEstoqueService.registrarCriacaoProduto(produtoSalvo);
         return toResponseDTO(produtoSalvo);
     }
-    
+
     public Optional<ProdutoResponseDTO> atualizarProduto(Long id, ProdutoRequestDTO produtoDTO) {
         return produtoRepository.findById(id)
                 .map(produto -> {
-                    if (!produto.getCodigo().equals(produtoDTO.getCodigo()) && 
-                        produtoRepository.existsByCodigo(produtoDTO.getCodigo())) {
+                    if (!produto.getCodigo().equals(produtoDTO.getCodigo()) &&
+                            produtoRepository.existsByCodigo(produtoDTO.getCodigo())) {
                         throw new RuntimeException("Já existe um produto com o código: " + produtoDTO.getCodigo());
                     }
-                    
+
                     if (produtoDTO.getQuantidadeEstoque().compareTo(BigDecimal.ZERO) < 0) {
                         throw new RuntimeException("Quantidade em estoque não pode ser negativa");
                     }
-                    
+
                     produto.setCodigo(produtoDTO.getCodigo());
                     produto.setNome(produtoDTO.getNome());
                     produto.setCategoria(produtoDTO.getCategoria());
                     produto.setQuantidadeEstoque(produtoDTO.getQuantidadeEstoque());
                     produto.setPrecoUnitario(produtoDTO.getPrecoUnitario());
-                    
+
                     Produto produtoAtualizado = produtoRepository.save(produto);
                     return toResponseDTO(produtoAtualizado);
                 });
     }
-    
+
     public boolean deletarProduto(Long id) {
         if (produtoRepository.existsById(id)) {
             produtoRepository.deleteById(id);
@@ -96,73 +95,73 @@ public class ProdutoService {
         }
         return false;
     }
-    
+
     private ProdutoResponseDTO toResponseDTO(Produto produto) {
         return new ProdutoResponseDTO(
-            produto.getId(),
-            produto.getCodigo(),
-            produto.getNome(),
-            produto.getCategoria(),
-            produto.getQuantidadeEstoque(),
-            produto.getPrecoUnitario()
-        );
+                produto.getId(),
+                produto.getCodigo(),
+                produto.getNome(),
+                produto.getCategoria(),
+                produto.getQuantidadeEstoque(),
+                produto.getPrecoUnitario());
     }
-    
+
     @Transactional
     public ProdutoResponseDTO baixarEstoque(Long id, BigDecimal quantidade) {
         if (quantidade.compareTo(BigDecimal.ZERO) <= 0) {
             throw new RuntimeException("Quantidade para baixa deve ser maior que zero");
         }
-        
+
         Produto produto = produtoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Produto não encontrado com ID: " + id));
-        
+
         if (produto.getQuantidadeEstoque().compareTo(quantidade) < 0) {
-            throw new RuntimeException("Estoque insuficiente. Disponível: " + produto.getQuantidadeEstoque() + ", Solicitado: " + quantidade);
+            throw new RuntimeException("Estoque insuficiente. Disponível: " + produto.getQuantidadeEstoque()
+                    + ", Solicitado: " + quantidade);
         }
-        
+
         produto.setQuantidadeEstoque(produto.getQuantidadeEstoque().add(quantidade.negate()));
         Produto produtoAtualizado = produtoRepository.save(produto);
-        
+
         return toResponseDTO(produtoAtualizado);
     }
-    
 
     @Transactional
     public ProdutoResponseDTO baixarEstoque(EstoqueMovimentacaoRequestDTO movimentacaoDTO) {
         validarMovimentacaoDTO(movimentacaoDTO);
-        
+
         if (movimentacaoDTO.getQuantidade().compareTo(BigDecimal.ZERO) <= 0) {
             throw new RuntimeException("Quantidade para baixa deve ser maior que zero");
         }
-        
+
         Produto produto = obterProduto(movimentacaoDTO);
-        
+
         if (produto.getQuantidadeEstoque().compareTo(movimentacaoDTO.getQuantidade()) < 0) {
-            throw new RuntimeException("Estoque insuficiente. Disponível: " + produto.getQuantidadeEstoque() + ", Solicitado: " + movimentacaoDTO.getQuantidade());
+            throw new RuntimeException("Estoque insuficiente. Disponível: " + produto.getQuantidadeEstoque()
+                    + ", Solicitado: " + movimentacaoDTO.getQuantidade());
         }
-        
+
         produto.setQuantidadeEstoque(produto.getQuantidadeEstoque().subtract(movimentacaoDTO.getQuantidade()));
         Produto produtoAtualizado = produtoRepository.save(produto);
-        
-        movimentacaoEstoqueService.registrarSaida(produtoAtualizado, movimentacaoDTO.getQuantidade(), 
+
+        movimentacaoEstoqueService.registrarSaida(produtoAtualizado, movimentacaoDTO.getQuantidade(),
                 movimentacaoDTO.getMotivo());
-        
+
         return toResponseDTO(produtoAtualizado);
     }
 
     @Transactional
     public ProdutoResponseDTO reporEstoque(EstoqueMovimentacaoRequestDTO movimentacaoDTO) {
         validarMovimentacaoDTO(movimentacaoDTO);
-        
+
         if (movimentacaoDTO.getQuantidade().compareTo(BigDecimal.ZERO) <= 0) {
             throw new RuntimeException("Quantidade para reposição deve ser maior que zero");
         }
-        
+
         Produto produto = obterProduto(movimentacaoDTO);
         produto.setQuantidadeEstoque(produto.getQuantidadeEstoque().add(movimentacaoDTO.getQuantidade()));
         Produto produtoAtualizado = produtoRepository.save(produto);
-        movimentacaoEstoqueService.registrarEntrada(produtoAtualizado, movimentacaoDTO.getQuantidade(), 
+        movimentacaoEstoqueService.registrarEntrada(produtoAtualizado, movimentacaoDTO.getQuantidade(),
                 movimentacaoDTO.getMotivo());
         return toResponseDTO(produtoAtualizado);
     }
@@ -170,24 +169,25 @@ public class ProdutoService {
     @Transactional
     public ProdutoResponseDTO ajustarEstoque(EstoqueMovimentacaoRequestDTO movimentacaoDTO) {
         validarMovimentacaoDTO(movimentacaoDTO);
-        
+
         Produto produto = obterProduto(movimentacaoDTO);
         BigDecimal novoEstoque = produto.getQuantidadeEstoque().add(movimentacaoDTO.getQuantidade());
-        
+
         if (novoEstoque.compareTo(BigDecimal.ZERO) < 0) {
-            throw new RuntimeException("Ajuste resultaria em estoque negativo. Estoque atual: " + produto.getQuantidadeEstoque() + ", Ajuste: " + movimentacaoDTO.getQuantidade());
+            throw new RuntimeException("Ajuste resultaria em estoque negativo. Estoque atual: "
+                    + produto.getQuantidadeEstoque() + ", Ajuste: " + movimentacaoDTO.getQuantidade());
         }
-        
+
         produto.setQuantidadeEstoque(novoEstoque);
         Produto produtoAtualizado = produtoRepository.save(produto);
-        
-        movimentacaoEstoqueService.registrarAjuste(produtoAtualizado, movimentacaoDTO.getQuantidade(), 
+
+        movimentacaoEstoqueService.registrarAjuste(produtoAtualizado, movimentacaoDTO.getQuantidade(),
                 movimentacaoDTO.getMotivo());
-        
+
         return toResponseDTO(produtoAtualizado);
     }
 
-public List<MovimentacaoEstoqueResponseDTO> buscarHistorico(Long id) {
+    public List<MovimentacaoEstoqueResponseDTO> buscarHistorico(Long id) {
         if (!produtoRepository.existsById(id)) {
             throw new RuntimeException("Produto não encontrado com ID: " + id);
         }
@@ -195,19 +195,19 @@ public List<MovimentacaoEstoqueResponseDTO> buscarHistorico(Long id) {
         return movimentacaoEstoqueService.buscarPorProduto(id)
                 .stream()
                 .map(mov -> new MovimentacaoEstoqueResponseDTO(
-                    mov.getId(),
-                    mov.getDataHora(),
-                    mov.getTipo().name(), // Retorna "ENTRADA", "SAIDA" ou "INVENTARIO"
-                    mov.getQuantidade(),
-                    mov.getMotivo(),
-                    null // Usuário ainda não vinculado na entidade
+                        mov.getId(),
+                        mov.getDataHora(),
+                        mov.getTipo().name(), // Retorna "ENTRADA", "SAIDA" ou "INVENTARIO"
+                        mov.getQuantidade(),
+                        mov.getMotivo(),
+                        null // Usuário ainda não vinculado na entidade
                 ))
                 .collect(Collectors.toList());
     }
-    
+
     public boolean verificarEstoqueSuficiente(EstoqueVerificacaoRequestDTO verificacaoDTO) {
         validarVerificacaoDTO(verificacaoDTO);
-        
+
         Produto produto = obterProdutoParaVerificacao(verificacaoDTO);
         return produto.getQuantidadeEstoque().compareTo(verificacaoDTO.getQuantidade()) >= 0;
     }
@@ -243,5 +243,5 @@ public List<MovimentacaoEstoqueResponseDTO> buscarHistorico(Long id) {
                     .orElseThrow(() -> new RuntimeException("Produto não encontrado com código: " + dto.getCodigo()));
         }
     }
-    
+
 }

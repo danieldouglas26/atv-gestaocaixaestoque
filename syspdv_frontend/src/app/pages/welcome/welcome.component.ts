@@ -8,8 +8,8 @@ import { ButtonModule } from 'primeng/button';
   selector: 'app-welcome',
   standalone: true,
   imports: [
-    CommonModule, 
-    RouterLink, 
+    CommonModule,
+    RouterLink,
     ButtonModule
   ],
   templateUrl: './welcome.component.html',
@@ -17,7 +17,7 @@ import { ButtonModule } from 'primeng/button';
 })
 export class WelcomeComponent {
   private authService = inject(AuthService);
-  
+
   userName = this.authService.currentUser()?.nome || 'Colega';
   dataAtual = new Date();
 

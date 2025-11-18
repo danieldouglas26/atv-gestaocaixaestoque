@@ -20,13 +20,13 @@ public class SyspdvBackendApplication {
     @Bean
     CommandLineRunner initData(UsuarioRepository usuarioRepository) {
         return args -> {
-            // Verifica se já existe algum usuário para não duplicar (útil se mudar o banco depois)
+            //Criação de usuário inicial para a aplicação
             if (usuarioRepository.count() == 0) {
                 
                 Usuario admin = new Usuario();
                 admin.setNomeCompleto("Administrador");
                 admin.setEmail("admin@syspdv.com");
-                admin.setSenha("Admin123"); // Senha em texto plano conforme seu AuthService atual
+                admin.setSenha("Admin123"); 
                 admin.setPerfil(PerfilUsuario.ADMIN);
                 admin.setStatus(StatusUsuario.ATIVO);
                 
@@ -38,7 +38,6 @@ public class SyspdvBackendApplication {
                 System.out.println(" Senha:  Admin123");
                 System.out.println("------------------------------------------------");
                 
-                // Opcional: Criar um Operador para testes rápidos
                 Usuario operador = new Usuario();
                 operador.setNomeCompleto("Operador de Caixa");
                 operador.setEmail("operador@syspdv.com");

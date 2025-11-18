@@ -76,7 +76,6 @@
 
 .bg-surface-50 { background-color: var(--p-surface-50); }
 
-/* Ajuste da tabela para não ter bordas externas */
 ::ng-deep .p-datatable .p-datatable-wrapper {
     border-radius: 0 0 var(--p-border-radius-xl) var(--p-border-radius-xl);
 }

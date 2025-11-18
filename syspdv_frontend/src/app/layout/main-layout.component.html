@@ -13,12 +13,7 @@
   <div class="layout-main">
     <header class="layout-topbar">
       <div class="flex align-items-center gap-3">
-        <p-button
-            icon="pi pi-bars"
-            [rounded]="true"
-            [text]="true"
-            severity="secondary"
-            (onClick)="toggleSidebar()">
+        <p-button icon="pi pi-bars" [rounded]="true" [text]="true" severity="secondary" (onClick)="toggleSidebar()">
         </p-button>
 
         <h3 class="m-0 text-lg font-medium text-600">{{ getPageTitle() }}</h3>
@@ -27,14 +22,8 @@
       <div class="flex align-items-center gap-3">
         <span class="text-sm text-600">Olá, <strong>{{ currentUser()?.nome }}</strong></span>
 
-        <p-button
-            icon="pi pi-power-off"
-            [rounded]="true"
-            [text]="true"
-            severity="danger"
-            pTooltip="Sair"
-            tooltipPosition="bottom"
-            (onClick)="onLogout()">
+        <p-button icon="pi pi-power-off" [rounded]="true" [text]="true" severity="danger" pTooltip="Sair"
+          tooltipPosition="bottom" (onClick)="onLogout()">
         </p-button>
       </div>
     </header>

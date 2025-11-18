@@ -1,4 +1,4 @@
-// --- Modelos de Autenticação e Usuário (Já existem) ---
+
 export type UserRole = 'ADMIN' | 'OPERADOR';
 
 export interface User {
@@ -33,7 +33,7 @@ export interface UserPayload {
   status: string;
 }
 
-// --- Modelo de Produto (Já existe) ---
+
 export interface Produto {
   id: number;
   codigo: string;
@@ -43,9 +43,9 @@ export interface Produto {
   precoUnitario: number;
 }
 
-// --- NOVOS MODELOS DE VENDA (Baseado na API) ---
 
-// Modelo do Item da Venda (Resposta da API)
+
+
 export interface ItemVenda {
   id: number;
   produto: Produto;
@@ -54,10 +54,10 @@ export interface ItemVenda {
   subtotal: number;
 }
 
-// Modelo da Venda Completa (Resposta da API)
+
 export interface Venda {
   id: number;
-  dataHora: string; // ou Date, se preferir tratar na recepção
+  dataHora: string;
   valorTotal: number;
   valorRecebido: number;
   troco: number;
@@ -65,15 +65,15 @@ export interface Venda {
   itens: ItemVenda[];
 }
 
-// --- NOVOS MODELOS DE PAYLOAD (Envio para API) ---
 
-// Modelo do Item para o Payload de nova Venda
+
+
 export interface ItemVendaPayload {
   produtoId: number;
   quantidade: number;
 }
 
-// Modelo do Payload para registrar nova Venda
+
 export interface VendaPayload {
   itens: ItemVendaPayload[];
   valorRecebido: number;
@@ -91,19 +91,19 @@ export interface VendaPayload {
   usuarioId: number;
 }
 
-// [NOVO] Interface para movimentação de estoque (Ajuste, Baixa, Reposição)
+
 export interface EstoqueMovimentoPayload {
   produtoId: number;
   quantidade: number;
-  motivo?: string; // Opcional em alguns casos, obrigatório em outros
-  codigo?: string; // A API lista, mas geralmente o ID basta (opcional)
+  motivo?: string;
+  codigo?: string;
 }
 
 export interface MovimentacaoEstoque {
   id: number;
   dataHora: string | Date;
-  tipo: 'ENTRADA' | 'SAIDA' | 'AJUSTE'; // Ou como sua API retornar
+  tipo: 'ENTRADA' | 'SAIDA' | 'AJUSTE';
   quantidade: number;
   motivo: string;
-  usuarioNome?: string; // Opcional: quem fez a alteração
+  usuarioNome?: string;
 }

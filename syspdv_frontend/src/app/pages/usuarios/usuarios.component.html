@@ -6,9 +6,12 @@
         <h2 class="m-0">Manter Usuários</h2>
         <div class="flex gap-2">
           <p-inputGroup>
-            <p-inputNumber placeholder="Buscar por ID" [formControl]="searchIdControl" [showButtons]="false" [useGrouping]="false" (keyup.enter)="buscarUsuarioPorId()"></p-inputNumber>
-            <button pButton icon="pi pi-search" (onClick)="buscarUsuarioPorId()" pTooltip="Buscar" tooltipPosition="top"></button>
-            <button pButton icon="pi pi-refresh" (onClick)="limparBusca()" styleClass="p-button-outlined" pTooltip="Limpar Busca" tooltipPosition="top"></button>
+            <p-inputNumber placeholder="Buscar por ID" [formControl]="searchIdControl" [showButtons]="false"
+              [useGrouping]="false" (keyup.enter)="buscarUsuarioPorId()"></p-inputNumber>
+            <button pButton icon="pi pi-search" (onClick)="buscarUsuarioPorId()" pTooltip="Buscar"
+              tooltipPosition="top"></button>
+            <button pButton icon="pi pi-refresh" (onClick)="limparBusca()" styleClass="p-button-outlined"
+              pTooltip="Limpar Busca" tooltipPosition="top"></button>
           </p-inputGroup>
           <p-button icon="pi pi-plus" label="Novo Usuário" (onClick)="abrirDialogNovo()"></p-button>
         </div>
@@ -16,7 +19,8 @@
     </ng-template>
     <ng-template pTemplate="header">
       <tr>
-        <th>ID</th> <th>Nome Completo</th>
+        <th>ID</th>
+        <th>Nome Completo</th>
         <th>E-mail</th>
         <th>Perfil</th>
         <th>Status</th>
@@ -25,61 +29,57 @@
     </ng-template>
     <ng-template pTemplate="body" let-user>
       <tr>
-        <td>{{ user.id }}</td> <td>{{ user.nomeCompleto }}</td>
+        <td>{{ user.id }}</td>
+        <td>{{ user.nomeCompleto }}</td>
         <td>{{ user.email }}</td>
         <td>{{ user.perfilDescricao }}</td>
         <td>{{ user.statusDescricao }}</td>
         <td>
-          <p-button
-            icon="pi pi-pencil"
-            pTooltip="Editar Usuário"
-            tooltipPosition="top"
-            styleClass="p-button-rounded p-button-success p-mr-2"
-            (onClick)="abrirDialogEditar(user)">
+          <p-button icon="pi pi-pencil" pTooltip="Editar Usuário" tooltipPosition="top"
+            styleClass="p-button-rounded p-button-success p-mr-2" (onClick)="abrirDialogEditar(user)">
           </p-button>
-          <p-button
-            icon="pi pi-trash"
-            pTooltip="Excluir Usuário"
-            tooltipPosition="top"
-            styleClass="p-button-rounded p-button-danger"
-            (onClick)="excluirUsuario(user.id)">
+          <p-button icon="pi pi-trash" pTooltip="Excluir Usuário" tooltipPosition="top"
+            styleClass="p-button-rounded p-button-danger" (onClick)="excluirUsuario(user.id)">
           </p-button>
         </td>
       </tr>
     </ng-template>
     <ng-template pTemplate="emptymessage">
-        <tr>
-            <td colspan="6" class="text-center">Nenhum usuário encontrado.</td>
-        </tr>
+      <tr>
+        <td colspan="6" class="text-center">Nenhum usuário encontrado.</td>
+      </tr>
     </ng-template>
   </p-table>
 </div>
 
-<p-dialog [(visible)]="dialogVisivel" [header]="isEditMode ? 'Editar Usuário' : 'Novo Usuário'" [modal]="true" [style]="{width: '500px'}" (onHide)="fecharDialog()">
+<p-dialog [(visible)]="dialogVisivel" [header]="isEditMode ? 'Editar Usuário' : 'Novo Usuário'" [modal]="true"
+  [style]="{width: '500px'}" (onHide)="fecharDialog()">
   <form [formGroup]="usuarioForm" (ngSubmit)="salvarUsuario()">
     <div class="p-fluid p-formgrid grid">
 
       <div class="field col-12">
         <label for="nomeCompleto">Nome Completo</label>
         <input pInputText id="nomeCompleto" formControlName="nomeCompleto" />
-        </div>
+      </div>
       <div class="field col-12">
         <label for="email">E-mail</label>
         <input pInputText id="email" formControlName="email" />
-        </div>
+      </div>
       <div class="field col-12">
         <label for="senha">Senha</label>
         <p-password id="senha" formControlName="senha" [toggleMask]="true" [feedback]="false"></p-password>
-        </div>
+      </div>
 
       <div class="field col-12">
         <label for="perfil">Perfil</label>
-        <p-dropdown id="perfil" [options]="perfis" formControlName="perfil" optionLabel="label" optionValue="value"></p-dropdown>
+        <p-dropdown id="perfil" [options]="perfis" formControlName="perfil" optionLabel="label"
+          optionValue="value"></p-dropdown>
       </div>
 
       <div class="field col-12">
         <label for="status">Status</label>
-        <p-dropdown id="status" [options]="status" formControlName="status" optionLabel="label" optionValue="value"></p-dropdown>
+        <p-dropdown id="status" [options]="status" formControlName="status" optionLabel="label"
+          optionValue="value"></p-dropdown>
       </div>
 
     </div>

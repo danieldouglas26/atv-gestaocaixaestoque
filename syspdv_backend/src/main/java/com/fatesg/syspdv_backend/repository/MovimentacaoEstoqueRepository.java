@@ -13,15 +13,17 @@ import com.fatesg.syspdv_backend.model.TipoMovimentacao;
 
 @Repository
 public interface MovimentacaoEstoqueRepository extends JpaRepository<MovimentacaoEstoque, Long> {
-    
+
     List<MovimentacaoEstoque> findByProdutoIdOrderByDataHoraDesc(Long produtoId);
-    
+
     List<MovimentacaoEstoque> findByTipoOrderByDataHoraDesc(TipoMovimentacao tipo);
-    
+
     List<MovimentacaoEstoque> findByDataHoraBetweenOrderByDataHoraDesc(LocalDateTime dataInicio, LocalDateTime dataFim);
-    
-    List<MovimentacaoEstoque> findByProdutoIdAndDataHoraBetweenOrderByDataHoraDesc(Long produtoId, LocalDateTime dataInicio, LocalDateTime dataFim);
-    
+
+    List<MovimentacaoEstoque> findByProdutoIdAndDataHoraBetweenOrderByDataHoraDesc(Long produtoId,
+            LocalDateTime dataInicio, LocalDateTime dataFim);
+
     @Query("SELECT m FROM MovimentacaoEstoque m WHERE m.produto.id = :produtoId AND m.tipo = :tipo ORDER BY m.dataHora DESC")
-    List<MovimentacaoEstoque> findByProdutoIdAndTipoOrderByDataHoraDesc(@Param("produtoId") Long produtoId, @Param("tipo") TipoMovimentacao tipo);
+    List<MovimentacaoEstoque> findByProdutoIdAndTipoOrderByDataHoraDesc(@Param("produtoId") Long produtoId,
+            @Param("tipo") TipoMovimentacao tipo);
 }

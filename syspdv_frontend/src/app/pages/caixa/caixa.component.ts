@@ -5,10 +5,7 @@ import { MessageService } from 'primeng/api';
 import { ProdutoService } from '../../core/services/produto.service';
 import { VendaService } from '../../core/services/venda.service';
 import { AuthService } from '../../core/services/auth.service';
-// CORREÇÃO: Adicione VendaPayload à importação
 import { Produto, ItemVendaPayload, Venda, VendaPayload } from '../../core/models/user.model';
-
-// Imports de PrimeNG
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
@@ -16,9 +13,8 @@ import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
 import { InputGroupModule } from 'primeng/inputgroup';
-import { DialogModule } from 'primeng/dialog'; // Para o recibo
+import { DialogModule } from 'primeng/dialog';
 
-// Interface interna para o carrinho
 interface ItemCarrinho {
   produto: Produto;
   quantidade: number;
@@ -49,18 +45,18 @@ export class CaixaComponent {
   private authService = inject(AuthService);
   private messageService = inject(MessageService);
 
-  // --- Formulários ---
+
   buscaForm: FormGroup;
   pagamentoForm: FormGroup;
 
-  // --- Estado do Caixa ---
+
   carrinho = signal<ItemCarrinho[]>([]);
   produtoEncontrado = signal<Produto | null>(null);
 
   totalVenda = signal<number>(0);
   troco = signal<number>(0);
 
-  // --- Estado do Recibo ---
+
   reciboDialogVisivel = false;
   vendaFinalizada: Venda | null = null;
 
@@ -75,7 +71,7 @@ export class CaixaComponent {
     });
   }
 
-  // --- Ações de Busca e Carrinho ---
+
 
   buscarProdutoPorCodigo(): void {
     const codigo = this.buscaForm.get('codigo')?.value;
@@ -84,7 +80,7 @@ export class CaixaComponent {
     this.produtoService.buscarPorCodigo(codigo).subscribe({
       next: (produto) => {
         this.produtoEncontrado.set(produto);
-        // Foca no campo quantidade para o operador digitar
+
         document.getElementById('quantidadeBusca')?.focus();
       },
       error: () => {
@@ -103,27 +99,28 @@ export class CaixaComponent {
       this.messageService.add({ severity: 'warn', summary: 'Atenção', detail: 'Busque um produto e informe a quantidade.' });
       return;
     }
-if (quantidade > produto.quantidadeEstoque) {
-   this.messageService.add({severity:'error', detail: 'Quantidade excede o estoque disponível!'});
-   return;
-}
-    // Verifica se o item já está no carrinho
+    if (quantidade > produto.quantidadeEstoque) {
+      this.messageService.add({ severity: 'error', detail: 'Quantidade excede o estoque disponível!' });
+      return;
+    }
+
     const itemExistente = this.carrinho().find(item => item.produto.id === produto.id);
 
     if (itemExistente) {
-      // Atualiza a quantidade do item existente
+
       this.carrinho.update(carrinhoAtual =>
         carrinhoAtual.map(item =>
           item.produto.id === produto.id
-          ? { ...item,
+            ? {
+              ...item,
               quantidade: item.quantidade + quantidade,
               subtotal: (item.quantidade + quantidade) * item.produto.precoUnitario
             }
-          : item
+            : item
         )
       );
     } else {
-      // Adiciona novo item
+
       const novoItem: ItemCarrinho = {
         produto: produto,
         quantidade: quantidade,
@@ -143,12 +140,12 @@ if (quantidade > produto.quantidadeEstoque) {
     this.atualizarTotal();
   }
 
-  // --- Ações de Cálculo e Finalização ---
+
 
   private atualizarTotal(): void {
     const total = this.carrinho().reduce((acc, item) => acc + item.subtotal, 0);
     this.totalVenda.set(total);
-    // Auto-preenche o valor recebido se o total for maior que zero
+
     if (total > 0) {
       this.pagamentoForm.get('valorRecebido')?.setValue(total);
       this.calcularTroco();
@@ -180,7 +177,7 @@ if (quantidade > produto.quantidadeEstoque) {
       return;
     }
 
-    // Mapeia o carrinho para o payload da API
+
     const itensPayload: ItemVendaPayload[] = this.carrinho().map(item => ({
       produtoId: item.produto.id,
       quantidade: item.quantidade
@@ -192,12 +189,12 @@ if (quantidade > produto.quantidadeEstoque) {
       usuarioId: usuarioId
     };
 
-    // Chama o serviço para registrar a venda
+
     this.vendaService.registrarVenda(vendaPayload).subscribe({
       next: (vendaRegistrada) => {
         this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Venda registrada com sucesso!' });
         this.vendaFinalizada = vendaRegistrada;
-        this.reciboDialogVisivel = true; // Abre o recibo
+        this.reciboDialogVisivel = true;
         this.limparVenda();
       },
       error: (err) => {

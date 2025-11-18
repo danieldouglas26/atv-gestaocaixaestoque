@@ -6,7 +6,7 @@ import { ProdutoService } from '../../core/services/produto.service';
 import { EstoqueMovimentoPayload, Produto } from '../../core/models/user.model';
 import { MovimentacaoEstoque } from '../../core/models/user.model';
 
-// Imports de PrimeNG
+
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -17,8 +17,8 @@ import { InputTextarea } from 'primeng/inputtextarea';
 import { TooltipModule } from 'primeng/tooltip';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
-import { TabViewModule } from 'primeng/tabview'; // <--- Importante para as abas
-import { TagModule } from 'primeng/tag'; 
+import { TabViewModule } from 'primeng/tabview';
+import { TagModule } from 'primeng/tag';
 
 @Component({
   selector: 'app-estoque',
@@ -50,35 +50,35 @@ export class EstoqueComponent implements OnInit {
   produtos: Produto[] = [];
   produtosOriginal: Produto[] = [];
 
-  // --- BUSCA ---
+
   searchControl = new FormControl('');
 
-// --- HISTÓRICO ---
+
   historicoDialogVisivel = false;
   historicoMovimentacoes: MovimentacaoEstoque[] = [];
   produtoSelecionadoHistorico: Produto | null = null;
   carregandoHistorico = false;
 
-  // --- CRUD PRODUTO ---
+
   produtoForm: FormGroup;
   dialogVisivel = false;
   isEditMode = false;
   currentProdutoId: number | null = null;
 
-  // --- MOVIMENTAÇÃO DE ESTOQUE ---
+
   ajusteDialogVisivel = false;
   currentProdutoAjuste: Produto | null = null;
 
-  // Formulários separados para cada aba
+
   formRepor: FormGroup;
   formBaixar: FormGroup;
   formAjuste: FormGroup;
 
-  // Helpers para o template
+
   get f() { return this.produtoForm.controls; }
 
   constructor() {
-    // Form principal do Produto (CRUD)
+
     this.produtoForm = this.fb.group({
       codigo: ['', Validators.required],
       nome: ['', Validators.required],
@@ -87,19 +87,19 @@ export class EstoqueComponent implements OnInit {
       quantidadeEstoque: [null, [Validators.required, Validators.min(0)]]
     });
 
-    // 1. Aba Repor (Aumentar Estoque)
+
     this.formRepor = this.fb.group({
       quantidade: [null, [Validators.required, Validators.min(1)]],
       motivo: ['', [Validators.required, Validators.minLength(5)]]
     });
 
-    // 2. Aba Baixar (Diminuir Estoque)
+
     this.formBaixar = this.fb.group({
       quantidade: [null, [Validators.required, Validators.min(1)]],
       motivo: ['', [Validators.required, Validators.minLength(5)]]
     });
 
-    // 3. Aba Ajuste (Definir Valor Final / Inventário)
+
     this.formAjuste = this.fb.group({
       estoqueFinal: [null, [Validators.required, Validators.min(0)]],
       motivo: ['', [Validators.required, Validators.minLength(5)]]
@@ -117,7 +117,7 @@ export class EstoqueComponent implements OnInit {
     });
   }
 
-  // --- BUSCA ---
+
 
   buscarProduto(): void {
     const codigo = this.searchControl.value;
@@ -143,7 +143,7 @@ export class EstoqueComponent implements OnInit {
     this.produtos = [...this.produtosOriginal];
   }
 
-  // --- CRUD ---
+
 
   abrirDialogNovo(): void {
     this.isEditMode = false;
@@ -201,29 +201,29 @@ export class EstoqueComponent implements OnInit {
     }
   }
 
-  // --- MOVIMENTAÇÃO DE ESTOQUE (ABAS) ---
+
 
   abrirDialogAjuste(produto: Produto): void {
     this.currentProdutoAjuste = produto;
-    
-    // Reseta os formulários das abas
+
+
     this.formRepor.reset();
     this.formBaixar.reset();
     this.formAjuste.reset();
 
-    // Pré-preenche o formulário de Ajuste com o valor atual para facilitar
+
     this.formAjuste.patchValue({ estoqueFinal: produto.quantidadeEstoque });
 
     this.ajusteDialogVisivel = true;
   }
 
 
-// --- NOVO MÉTODO: Abrir Histórico ---
+
   abrirHistorico(produto: Produto): void {
     this.produtoSelecionadoHistorico = produto;
     this.historicoDialogVisivel = true;
     this.carregandoHistorico = true;
-    this.historicoMovimentacoes = []; // Limpa anterior
+    this.historicoMovimentacoes = [];
 
     this.produtoService.buscarHistorico(produto.id).subscribe({
       next: (data) => {
@@ -232,21 +232,21 @@ export class EstoqueComponent implements OnInit {
       },
       error: (err) => {
         this.carregandoHistorico = false;
-        this.messageService.add({ 
-            severity: 'error', 
-            summary: 'Erro', 
-            detail: 'Não foi possível carregar o histórico.' 
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: 'Não foi possível carregar o histórico.'
         });
       }
     });
   }
 
-  // Helper para cor da Badge/Tag
+
   getSeverity(tipo: string): 'success' | 'info' | 'warning' | 'danger' | 'secondary' | 'contrast' | undefined {
     switch (tipo) {
-      case 'ENTRADA': return 'success'; // Verde
-      case 'SAIDA': return 'danger';    // Vermelho
-      case 'INVENTARIO': return 'warning';  // Laranja
+      case 'ENTRADA': return 'success';
+      case 'SAIDA': return 'danger';
+      case 'INVENTARIO': return 'warning';
       default: return 'info';
     }
   }
@@ -257,7 +257,7 @@ export class EstoqueComponent implements OnInit {
     this.currentProdutoAjuste = null;
   }
 
-  // 1. Ação: REPOR (API espera quantidade positiva)
+
   onRepor(): void {
     if (this.formRepor.invalid || !this.currentProdutoAjuste) {
       this.formRepor.markAllAsTouched();
@@ -278,7 +278,7 @@ export class EstoqueComponent implements OnInit {
     });
   }
 
-  // 2. Ação: BAIXAR (API espera quantidade positiva que será subtraída)
+
   onBaixar(): void {
     if (this.formBaixar.invalid || !this.currentProdutoAjuste) {
       this.formBaixar.markAllAsTouched();
@@ -299,15 +299,15 @@ export class EstoqueComponent implements OnInit {
     });
   }
 
-  // 3. Ação: AJUSTAR (API espera a diferença: Valor Final - Valor Atual)
+
   onAjustar(): void {
     if (this.formAjuste.invalid || !this.currentProdutoAjuste) {
       this.formAjuste.markAllAsTouched();
       return;
     }
     const { estoqueFinal, motivo } = this.formAjuste.value;
-    
-    // Cálculo da diferença
+
+
     const diferenca = estoqueFinal - this.currentProdutoAjuste.quantidadeEstoque;
 
     if (diferenca === 0) {
@@ -318,7 +318,7 @@ export class EstoqueComponent implements OnInit {
     const payload: EstoqueMovimentoPayload = {
       produtoId: this.currentProdutoAjuste.id,
       codigo: this.currentProdutoAjuste.codigo,
-      quantidade: diferenca, // Envia a diferença (pode ser negativa ou positiva)
+      quantidade: diferenca,
       motivo: motivo
     };
 
@@ -335,14 +335,14 @@ export class EstoqueComponent implements OnInit {
   }
 
   private handleErroMovimentacao(err: any): void {
-    this.messageService.add({ 
-        severity: 'error', 
-        summary: 'Erro', 
-        detail: err.error?.message || 'Erro ao processar movimentação.' 
+    this.messageService.add({
+      severity: 'error',
+      summary: 'Erro',
+      detail: err.error?.message || 'Erro ao processar movimentação.'
     });
   }
 
 
 
-  
+
 }

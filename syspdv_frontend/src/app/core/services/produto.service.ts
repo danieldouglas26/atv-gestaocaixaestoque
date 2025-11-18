@@ -10,8 +10,6 @@ export class ProdutoService {
 
   constructor(private http: HttpClient) { }
 
-  // --- CRUD Básico (Mantido igual, pois a API não mudou nestes pontos) ---
-
   listar(): Observable<Produto[]> {
     return this.http.get<Produto[]>(this.baseUrl);
   }
@@ -36,44 +34,25 @@ export class ProdutoService {
     return this.http.delete(`${this.baseUrl}/${id}`);
   }
 
-  // --- NOVOS ENDPOINTS (Movimentação de Estoque - ATUALIZADO) ---
-
-  /**
-   * Realiza ajuste de estoque (positivo ou negativo) com motivo.
-   * Agora envia um JSON Body para /api/produtos/ajustar-estoque
-   */
   ajustarEstoque(payload: EstoqueMovimentoPayload): Observable<any> {
     return this.http.post(`${this.baseUrl}/ajustar-estoque`, payload);
   }
 
-  /**
-   * Realiza reposição de estoque (apenas positivo).
-   * Agora envia um JSON Body para /api/produtos/repor-estoque
-   */
   reporEstoque(payload: EstoqueMovimentoPayload): Observable<any> {
     return this.http.post(`${this.baseUrl}/repor-estoque`, payload);
   }
 
-  /**
-   * Realiza baixa de estoque (apenas positivo).
-   * Agora envia um JSON Body para /api/produtos/baixar-estoque
-   */
+
   baixarEstoque(payload: EstoqueMovimentoPayload): Observable<any> {
     return this.http.post(`${this.baseUrl}/baixar-estoque`, payload);
   }
 
-  /**
-   * Verifica se a quantidade solicitada está disponível.
-   * MUDOU DE GET PARA POST conforme documentação
-   */
+
   verificarEstoque(payload: EstoqueMovimentoPayload): Observable<any> {
     return this.http.post(`${this.baseUrl}/verificar-estoque`, payload);
   }
 
-  /**
-   * GET /api/produtos/{id}/historico
-   * Retorna o histórico de movimentações de um produto
-   */
+
   buscarHistorico(id: number): Observable<MovimentacaoEstoque[]> {
     return this.http.get<MovimentacaoEstoque[]>(`${this.baseUrl}/${id}/historico`);
   }

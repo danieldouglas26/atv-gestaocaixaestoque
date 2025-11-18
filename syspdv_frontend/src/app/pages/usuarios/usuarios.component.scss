@@ -1,12 +1,4 @@
-/* Classes como .table-header-container, .p-error, .p-info,
-  .p-dialog-footer, e .text-center
-  FORAM MOVIDAS para o styles.scss global.
-  Este arquivo fica quase vazio.
-*/
-
-/* Adiciona espaçamento entre os botões de ação na tabela */
 ::ng-deep .p-button.p-mr-2 {
-  /* Abordagem antiga. Recomendo usar 'gap' no container dos botões no HTML se possível.
-     Mas, para manter seu HTML, vamos manter: */
+
   margin-right: 0.5rem;
 }

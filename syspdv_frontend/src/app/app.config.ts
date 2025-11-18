@@ -1,4 +1,4 @@
-// app.config.ts
+
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
@@ -16,11 +16,11 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     MessageService,
     providePrimeNG({
-      ripple: true, // <--- Ativa animação de clique
+      ripple: true,
       theme: {
         preset: Lara,
         options: {
-          darkModeSelector: '.dark-mode', // Permite alternar modo escuro manualmente se quiser
+          darkModeSelector: '.dark-mode',
           cssLayer: {
             name: 'primeng',
             order: 'app-styles, primeng'

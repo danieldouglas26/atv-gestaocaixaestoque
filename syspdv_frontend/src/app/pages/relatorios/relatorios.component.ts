@@ -5,8 +5,6 @@ import { MessageService } from 'primeng/api';
 import { VendaService } from '../../core/services/venda.service';
 import { UsuarioService } from '../../core/services/usuario.service';
 import { ApiUser, Venda } from '../../core/models/user.model';
-
-// Imports UI
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -14,7 +12,7 @@ import { ToastModule } from 'primeng/toast';
 import { CalendarModule } from 'primeng/calendar';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { PanelModule } from 'primeng/panel'; // <--- NOVO IMPORT
+import { PanelModule } from 'primeng/panel';
 import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
@@ -30,16 +28,13 @@ import { TooltipModule } from 'primeng/tooltip';
     CalendarModule,
     DropdownModule,
     InputNumberModule,
-    PanelModule, // <--- ADICIONE AQUI
+    PanelModule,
     TooltipModule
   ],
   templateUrl: './relatorios.component.html',
   styleUrl: './relatorios.component.scss'
 })
 export class RelatoriosComponent implements OnInit {
-  // ... (Mantenha todo o código da classe exatamente como estava antes)
-  // A lógica não muda, apenas o visual.
-
   private vendaService = inject(VendaService);
   private usuarioService = inject(UsuarioService);
   private messageService = inject(MessageService);
@@ -59,7 +54,7 @@ export class RelatoriosComponent implements OnInit {
 
   dialogVisivel = false;
   vendaSelecionada: Venda | null = null;
-window: any;
+  window: any;
 
   ngOnInit(): void {
     this.carregarVendas();

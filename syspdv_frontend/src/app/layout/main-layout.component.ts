@@ -28,7 +28,7 @@ export class MainLayoutComponent implements OnInit {
   menuItems: MenuItem[] = [];
   currentUser = this.authService.currentUser;
 
-  // Controle de visibilidade do menu
+
   sidebarVisible = true;
 
   constructor() {

@@ -1,10 +1,4 @@
-/* Classes como .table-header-container, .p-error,
-  .p-dialog-footer, e .text-center
-  FORAM MOVIDAS para o styles.scss global.
-  Este arquivo fica quase vazio.
-*/
 
-/* Adiciona espaçamento entre os botões de ação na tabela */
 ::ng-deep .p-button.p-mr-2 {
   margin-right: 0.5rem;
 }

@@ -11,71 +11,71 @@ import { CaixaComponent } from './pages/caixa/caixa.component';
 import { RelatoriosComponent } from './pages/relatorios/relatorios.component';
 
 export const routes: Routes = [
-  // Rota de Login (pública)
+
   {
     path: 'login',
     component: LoginComponent
   },
 
-  // Rota principal da aplicação (protegida por login)
+
   {
     path: 'app',
     component: MainLayoutComponent,
     canActivate: [authGuard],
     children: [
-      // Telas iniciais baseadas em role
+
       {
         path: 'dashboard',
         component: DashboardComponent,
         canActivate: [roleGuard],
-        data: { roles: ['ADMIN'] } //
+        data: { roles: ['ADMIN'] }
       },
       {
         path: 'welcome',
         component: WelcomeComponent,
         canActivate: [roleGuard],
-        data: { roles: ['OPERADOR'] } //
+        data: { roles: ['OPERADOR'] }
       },
 
-      // Módulos
+
       {
         path: 'usuarios',
         component: UsuariosComponent,
         canActivate: [roleGuard],
-        data: { roles: ['ADMIN'] } // [cite: 6, 14]
+        data: { roles: ['ADMIN'] }
       },
       {
         path: 'estoque',
         component: EstoqueComponent,
         canActivate: [roleGuard],
-        data: { roles: ['ADMIN'] } // [cite: 6, 26]
+        data: { roles: ['ADMIN'] }
       },
       {
         path: 'caixa',
         component: CaixaComponent,
         canActivate: [roleGuard],
-        data: { roles: ['OPERADOR'] } // [cite: 6, 41]
+        data: { roles: ['OPERADOR'] }
       },
       {
         path: 'relatorios',
         component: RelatoriosComponent,
         canActivate: [roleGuard],
-        data: { roles: ['ADMIN', 'OPERADOR'] } // [cite: 6, 52, 61]
+        data: { roles: ['ADMIN', 'OPERADOR'] }
       },
 
-      // Rota 'vazia' dentro de /app, será tratada pelo MainLayoutComponent
+
 
     ]
   },
 
-  // Redirecionamento padrão para a aplicação (se já logado) ou login
+
   {
     path: '',
     pathMatch: 'full',
     redirectTo: 'app'
   },
 
-  // Rota Curinga (Not Found)
+
   {
     path: '**',
     redirectTo: 'app'

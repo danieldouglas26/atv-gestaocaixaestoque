@@ -2,13 +2,13 @@ import { Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, tap, map, catchError, throwError } from 'rxjs';
 import { ApiAuthResponse, ApiUser, User, UserRole } from '../models/user.model';
-import { HttpClient } from '@angular/common/http'; // Importe o HttpClient
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private baseUrl = 'http://localhost:8080/api/auth'; // URL base da API de Auth
+  private baseUrl = 'http://localhost:8080/api/auth';
 
   private static readonly USER_KEY = 'auth_user';
   private static readonly TOKEN_KEY = 'auth_token';
@@ -16,16 +16,14 @@ export class AuthService {
   public currentUser = signal<User | null>(this.getUserFromStorage());
 
   constructor(
-    private http: HttpClient, // Injete o HttpClient
+    private http: HttpClient,
     private router: Router
   ) { }
 
-  // Mapeia a string do perfil da API ("ADM") para a Role do Frontend ("ADMIN")
   private mapApiPerfilToUserRole(apiPerfil: string): UserRole {
     if (apiPerfil === 'ADM') {
       return 'ADMIN';
     }
-    // Adicione outras RAs, ex: if (apiPerfil === 'OPR') { return 'OPERADOR'; }
     return 'OPERADOR';
   }
 
@@ -42,9 +40,9 @@ export class AuthService {
         const apiUser: ApiUser = response.usuario;
         const user: User = {
           id: apiUser.id,
-          nome: apiUser.nomeCompleto, // Mapeia 'nomeCompleto' para 'nome'
+          nome: apiUser.nomeCompleto,
           email: apiUser.email,
-          perfil: this.mapApiPerfilToUserRole(apiUser.perfil) // Mapeia "ADM" -> "ADMIN"
+          perfil: this.mapApiPerfilToUserRole(apiUser.perfil)
         };
 
         // 2. Salva no storage
@@ -91,7 +89,7 @@ export class AuthService {
 
   private saveToStorage(user: User, token: string): void {
     localStorage.setItem(AuthService.USER_KEY, JSON.stringify(user));
-    localStorage.setItem(AuthService.TOKEN_KEY, token); // Salva o 'tokenSessao'
+    localStorage.setItem(AuthService.TOKEN_KEY, token);
   }
 
   private getUserFromStorage(): User | null {
