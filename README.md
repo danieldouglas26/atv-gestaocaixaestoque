@@ -1,4 +1,4 @@
-# SysPDV - Sistema de Gestão de estoque e caixa (Atv do dia 03-11-2025)
+# NexusPDV - Sistema de Gestão de estoque e caixa (Atv do dia 03-11-2025)
 
 Readme da raiz do repositório da atividade.
 
